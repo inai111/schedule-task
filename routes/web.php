@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        dd(auth()->user()->role);
-    });
+    Route::get('/', [DashboardController::class,'index']);
     Route::get('/logout', function () {
         auth()->logout();
         request()->session()->regenerate();

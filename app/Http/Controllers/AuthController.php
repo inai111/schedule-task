@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -28,7 +29,14 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = $request->validate([
+            'password'=>'confirmed|min:6|max:8|required',
+            'email'=>'unique:users|email|required',
+            'username'=>'unique:users|alpha_num|required',
+            'name'=>'string|required',
+        ]);
+        User::create($validation);
+        return redirect()->back()->with('message','Account created successfully');
     }
 
     /**
