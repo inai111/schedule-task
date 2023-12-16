@@ -6,12 +6,12 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">'Heading 1'</h1>
+                            <h1 class="m-0">Dashboard</h1>
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard v3</li>
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item active">Dashboard</li>
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -26,71 +26,27 @@
                         <div class="col-lg-6">
                             <div class="card">
                                 <div class="card-header border-0">
-                                    <div class="d-flex justify-content-between">
-                                        <h3 class="card-title">Online Store Visitors</h3>
-                                        <a href="javascript:void(0);">View Report</a>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <p class="d-flex flex-column">
-                                            <span class="text-bold text-lg">820</span>
-                                            <span>Visitors Over Time</span>
-                                        </p>
-                                        <p class="ml-auto d-flex flex-column text-right">
-                                            <span class="text-success">
-                                                <i class="fas fa-arrow-up"></i> 12.5%
-                                            </span>
-                                            <span class="text-muted">Since last week</span>
-                                        </p>
-                                    </div>
-                                    <!-- /.d-flex -->
-
-                                    <div class="position-relative mb-4">
-                                        <canvas id="visitors-chart" height="200"></canvas>
-                                    </div>
-
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <span class="mr-2">
-                                            <i class="fas fa-square text-primary"></i> This Week
-                                        </span>
-
-                                        <span>
-                                            <i class="fas fa-square text-gray"></i> Last Week
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.card -->
-
-                            <div class="card">
-                                <div class="card-header border-0">
-                                    <h3 class="card-title">Products</h3>
-                                    <div class="card-tools">
-                                        <a href="#" class="btn btn-tool btn-sm">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-tool btn-sm">
-                                            <i class="fas fa-bars"></i>
-                                        </a>
-                                    </div>
+                                    <h3 class="card-title">Active Order</h3>
                                 </div>
                                 <div class="card-body table-responsive p-0">
                                     <table class="table table-striped table-valign-middle">
                                         <thead>
                                             <tr>
+                                                <th>Order Id</th>
                                                 <th>Product</th>
                                                 <th>Price</th>
-                                                <th>Sales</th>
+                                                <th>Down Payment</th>
                                                 <th>More</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @if(isset($orders))
                                             <tr>
+                                                <td>asdasdqwe12312</td>
                                                 <td>
-                                                    <img src="dist/img/default-150x150.png" alt="Product 1"
+                                                    <img src="{{asset('storage/ico.png')}}" alt="Product 1"
                                                         class="img-circle img-size-32 mr-2">
-                                                    Some Product
+                                                    Weeding Organizer
                                                 </td>
                                                 <td>$13 USD</td>
                                                 <td>
@@ -106,60 +62,56 @@
                                                     </a>
                                                 </td>
                                             </tr>
+                                            @else
                                             <tr>
-                                                <td>
-                                                    <img src="dist/img/default-150x150.png" alt="Product 1"
-                                                        class="img-circle img-size-32 mr-2">
-                                                    Another Product
-                                                </td>
-                                                <td>$29 USD</td>
-                                                <td>
-                                                    <small class="text-warning mr-1">
-                                                        <i class="fas fa-arrow-down"></i>
-                                                        0.5%
-                                                    </small>
-                                                    123,234 Sold
-                                                </td>
-                                                <td>
-                                                    <a href="#" class="text-muted">
-                                                        <i class="fas fa-search"></i>
+                                                <td colspan="5" class="text-center">No Active Order</td>
+                                            </tr>
+                                            @endif
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    <a href="/" class="btn btn-sm btn-primary">
+                                                        Order Service Now
                                                     </a>
                                                 </td>
                                             </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header border-0">
+                                    <h3 class="card-title">Active Payment</h3>
+                                </div>
+                                <div class="card-body table-responsive p-0">
+                                    <table class="table table-striped table-valign-middle">
+                                        <thead>
                                             <tr>
-                                                <td>
-                                                    <img src="dist/img/default-150x150.png" alt="Product 1"
-                                                        class="img-circle img-size-32 mr-2">
-                                                    Amazing Product
-                                                </td>
-                                                <td>$1,230 USD</td>
-                                                <td>
-                                                    <small class="text-danger mr-1">
-                                                        <i class="fas fa-arrow-down"></i>
-                                                        3%
-                                                    </small>
-                                                    198 Sold
-                                                </td>
-                                                <td>
-                                                    <a href="#" class="text-muted">
-                                                        <i class="fas fa-search"></i>
-                                                    </a>
-                                                </td>
+                                                <th>Order Id</th>
+                                                <th>Tender</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                                <th>Pay Before</th>
+                                                <th>More</th>
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if(isset($orders))
                                             <tr>
                                                 <td>
-                                                    <img src="dist/img/default-150x150.png" alt="Product 1"
+                                                    <img src="{{asset('storage/ico.png')}}" alt="Product 1"
                                                         class="img-circle img-size-32 mr-2">
-                                                    Perfect Item
-                                                    <span class="badge bg-danger">NEW</span>
+                                                    Weeding Organizer
                                                 </td>
-                                                <td>$199 USD</td>
+                                                <td>$13 USD</td>
                                                 <td>
                                                     <small class="text-success mr-1">
                                                         <i class="fas fa-arrow-up"></i>
-                                                        63%
+                                                        12%
                                                     </small>
-                                                    87 Sold
+                                                    12,000 Sold
                                                 </td>
                                                 <td>
                                                     <a href="#" class="text-muted">
@@ -167,6 +119,11 @@
                                                     </a>
                                                 </td>
                                             </tr>
+                                            @else
+                                            <tr>
+                                                <td colspan="6" class="text-center">No Active Payment</td>
+                                            </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -178,8 +135,8 @@
                             <div class="card">
                                 <div class="card-header border-0">
                                     <div class="d-flex justify-content-between">
-                                        <h3 class="card-title">Sales</h3>
-                                        <a href="javascript:void(0);">View Report</a>
+                                        <h3 class="card-title">Schedule</h3>
+                                        <a href="javascript:void(0);">View Schedule</a>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -196,20 +153,6 @@
                                         </p>
                                     </div>
                                     <!-- /.d-flex -->
-
-                                    <div class="position-relative mb-4">
-                                        <canvas id="sales-chart" height="200"></canvas>
-                                    </div>
-
-                                    <div class="d-flex flex-row justify-content-end">
-                                        <span class="mr-2">
-                                            <i class="fas fa-square text-primary"></i> This year
-                                        </span>
-
-                                        <span>
-                                            <i class="fas fa-square text-gray"></i> Last year
-                                        </span>
-                                    </div>
                                 </div>
                             </div>
                             <!-- /.card -->

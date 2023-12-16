@@ -17,9 +17,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         # admin
-        \App\Models\User::factory(1)->create(['role_id'=>1]);
+        \App\Models\User::factory(1)->create([
+            'role_id'=>1,
+            'username'=>'admin'
+        ]);
         # user biasa
         \App\Models\User::factory(3)->create();
+        \App\Models\User::factory(1)->create(['username'=>'uuu','email'=>'sasmitobaguss@gmail.com']);
         # staff 1
         \App\Models\User::factory(2)->create(['role_id'=>2]);
         # staff 2
