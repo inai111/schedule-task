@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
-use App\Models\Order;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -21,21 +22,46 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.order.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreOrderRequest $request)
+    public function store(Request $request)
     {
-        //
+        $afterDate = Carbon::now()->addMonths(3)->toString();
+        $validation = $request->validate([
+            'plan_date'=>"required|date|after:{$afterDate}"
+        ]);
+
+        return DB::transaction(function()use($validation){
+            $user = auth()->user();
+            $user = User::where('id',$user->id)->lockForUpdate()->first();
+
+            $order = $user->orders()->create([
+                'plan_date'=>$validation['plan_date'],
+            ]);
+
+            # buat id transaksi nya
+            $transaction = $order->transactions()->create();
+            # buat detail transaksi nya karena mungkin dapat memuat banyak barang
+            $transaction->transaction_details()->create([
+                'product'=>'Down Payment Weeding Organizer',
+                'sub_total'=>'5000000'
+            ]);
+
+            return response()->json([
+                'message'=>"Order Created",
+                'url_redirect'=>route('transaction.show',['transaction'=>$transaction->id])
+            ],201);
+        });
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Order $order)
+    public function show(string $id)
     {
         //
     }
@@ -43,7 +69,7 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Order $order)
+    public function edit(string $id)
     {
         //
     }
@@ -51,7 +77,7 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -59,7 +85,7 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function destroy(string $id)
     {
         //
     }

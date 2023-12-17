@@ -2,13 +2,14 @@
     @if (!auth()->user()->email_verified_at)
         <div class="alert alert-warning" role="alert">
             @if (session('message'))
-            <strong>{{session('message')}}</strong>
+                <strong>{{ session('message') }}</strong>
             @else
-            Perlu tindakan tambahan untuk verifikasi email <strong>{{auth()->user()->email}}</strong> sebelum membuat pesanan.
-            <form action="{{route('verification.send')}}" method="post" class="d-inline">
-                @csrf
-                <button class="btn btn-sm px-3 btn-primary" type="submit">Verifikasi sekarang</button>
-            </form>
+                Perlu tindakan tambahan untuk verifikasi email <strong>{{ auth()->user()->email }}</strong> sebelum
+                membuat pesanan.
+                <form action="{{ route('verification.send') }}" method="post" class="d-inline">
+                    @csrf
+                    <button class="btn btn-sm px-3 btn-primary" type="submit">Verifikasi sekarang</button>
+                </form>
             @endif
         </div>
     @endif
@@ -54,7 +55,7 @@
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="info mx-auto">
-                    <a href="#" class="d-block">{{auth()->user()->name}}</a>
+                    <a href="#" class="d-block">{{ auth()->user()->name }}</a>
                 </div>
             </div>
 
@@ -83,6 +84,32 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
+                    @can('create',App\Model\Order::class)
+                    <li class="nav-item menu-open">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                My Order
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('order.index') }}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('order.create') }}"
+                                    class="nav-link @if (request()->is('order/create')) active @endif">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Create</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endcan
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

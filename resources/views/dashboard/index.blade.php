@@ -40,38 +40,38 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(isset($orders))
-                                            <tr>
-                                                <td>asdasdqwe12312</td>
-                                                <td>
-                                                    <img src="{{asset('storage/ico.png')}}" alt="Product 1"
-                                                        class="img-circle img-size-32 mr-2">
-                                                    Weeding Organizer
-                                                </td>
-                                                <td>$13 USD</td>
-                                                <td>
-                                                    <small class="text-success mr-1">
-                                                        <i class="fas fa-arrow-up"></i>
-                                                        12%
-                                                    </small>
-                                                    12,000 Sold
-                                                </td>
-                                                <td>
-                                                    <a href="#" class="text-muted">
-                                                        <i class="fas fa-search"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                            @if (isset($orders))
+                                                <tr>
+                                                    <td>asdasdqwe12312</td>
+                                                    <td>
+                                                        <img src="{{ asset('storage/ico.png') }}" alt="Product 1"
+                                                            class="img-circle img-size-32 mr-2">
+                                                        Weeding Organizer
+                                                    </td>
+                                                    <td>$13 USD</td>
+                                                    <td>
+                                                        <small class="text-success mr-1">
+                                                            <i class="fas fa-arrow-up"></i>
+                                                            12%
+                                                        </small>
+                                                        12,000 Sold
+                                                    </td>
+                                                    <td>
+                                                        <a href="#" class="text-muted">
+                                                            <i class="fas fa-search"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                             @else
-                                            <tr>
-                                                <td colspan="5" class="text-center">No Active Order</td>
-                                            </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No Active Order</td>
+                                                </tr>
                                             @endif
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colspan="5" class="text-center">
-                                                    <a href="/" class="btn btn-sm btn-primary">
+                                                    <a href="{{route('order.create')}}" class="btn btn-sm btn-primary">
                                                         Order Service Now
                                                     </a>
                                                 </td>
@@ -98,31 +98,31 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(isset($orders))
-                                            <tr>
-                                                <td>
-                                                    <img src="{{asset('storage/ico.png')}}" alt="Product 1"
-                                                        class="img-circle img-size-32 mr-2">
-                                                    Weeding Organizer
-                                                </td>
-                                                <td>$13 USD</td>
-                                                <td>
-                                                    <small class="text-success mr-1">
-                                                        <i class="fas fa-arrow-up"></i>
-                                                        12%
-                                                    </small>
-                                                    12,000 Sold
-                                                </td>
-                                                <td>
-                                                    <a href="#" class="text-muted">
-                                                        <i class="fas fa-search"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                            @if (isset($orders))
+                                                <tr>
+                                                    <td>
+                                                        <img src="{{ asset('storage/ico.png') }}" alt="Product 1"
+                                                            class="img-circle img-size-32 mr-2">
+                                                        Weeding Organizer
+                                                    </td>
+                                                    <td>$13 USD</td>
+                                                    <td>
+                                                        <small class="text-success mr-1">
+                                                            <i class="fas fa-arrow-up"></i>
+                                                            12%
+                                                        </small>
+                                                        12,000 Sold
+                                                    </td>
+                                                    <td>
+                                                        <a href="#" class="text-muted">
+                                                            <i class="fas fa-search"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                             @else
-                                            <tr>
-                                                <td colspan="6" class="text-center">No Active Payment</td>
-                                            </tr>
+                                                <tr>
+                                                    <td colspan="6" class="text-center">No Active Payment</td>
+                                                </tr>
                                             @endif
                                         </tbody>
                                     </table>
@@ -140,34 +140,42 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <p class="d-flex flex-column">
-                                            <span class="text-bold text-lg">$18,230.00</span>
-                                            <span>Sales Over Time</span>
-                                        </p>
-                                        <p class="ml-auto d-flex flex-column text-right">
-                                            <span class="text-success">
-                                                <i class="fas fa-arrow-up"></i> 33.1%
-                                            </span>
-                                            <span class="text-muted">Since last month</span>
-                                        </p>
+                                    <div>
+                                        <h1>{{date('D, d M Y')}}</h1>
+                                        <div class="d-flex">
+                                            <p class="d-flex flex-column">
+                                                <span class="text-bold text-lg text-warning">Recently</span>
+                                                <span>Menentukan Gedung</span>
+                                            </p>
+                                            <p class="ml-auto d-flex flex-column text-right">
+                                                <span class="">
+                                                    <i class="fas fa-calendar"></i>
+                                                    {{date('D, d M Y')}}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <!-- /.d-flex -->
+                                        <div class="d-flex">
+                                            <p class="d-flex flex-column">
+                                                <span class="text-bold text-lg text-success">Upcoming</span>
+                                                <span>Menentukan Catering</span>
+                                            </p>
+                                            <p class="ml-auto d-flex flex-column text-right">
+                                                <span class="text-success">
+                                                    <i class="fas fa-calendar"></i>
+                                                    {{date('D, d M Y')}}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <!-- /.d-flex -->
                                     </div>
-                                    <!-- /.d-flex -->
                                 </div>
                             </div>
                             <!-- /.card -->
 
                             <div class="card">
                                 <div class="card-header border-0">
-                                    <h3 class="card-title">Online Store Overview</h3>
-                                    <div class="card-tools">
-                                        <a href="#" class="btn btn-sm btn-tool">
-                                            <i class="fas fa-download"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-sm btn-tool">
-                                            <i class="fas fa-bars"></i>
-                                        </a>
-                                    </div>
+                                    <h3 class="card-title">Ongoing Order Overview</h3>
                                 </div>
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center border-bottom mb-3">

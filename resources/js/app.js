@@ -1,4 +1,4 @@
-// import './bootstrap';
+import './bootstrap.js';
 
 // Font Awesome
 import '/vendor/almasaeed2010/adminlte/plugins/fontawesome-free/css/all.min.css';

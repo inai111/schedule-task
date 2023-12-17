@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +40,14 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('message', 'Verification link sent!');
     })->middleware(['throttle:3,1'])->name('verification.send');
+
+    Route::resource('order',OrderController::class);
+    Route::resource('user',UserController::class);
+
+    Route::middleware('verified')->group(function(){
+        Route::get('transaction/{transaction}/snap',[TransactionController::class,'snap'])->name('transaction.snap');
+        Route::resource('transaction',TransactionController::class);
+    });
 
 });
 
