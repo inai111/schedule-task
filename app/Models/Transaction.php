@@ -26,7 +26,7 @@ class Transaction extends Model
         return $this->morphTo();
     }
 
-    public function transaction_details()
+    public function transactionDetails()
     {
         return $this->hasMany(TransactionDetail::class);
     }

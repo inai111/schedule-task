@@ -13,7 +13,7 @@ class OrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -21,7 +21,8 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        //
+        return ($user->role_id == 4 && $order->user_id == $user->id) ||
+        $user->role_id != 4;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -9,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Order::class);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -36,11 +42,13 @@ class OrderController extends Controller
         ]);
 
         return DB::transaction(function()use($validation){
+            $defaultDP = 5000000;
             $user = auth()->user();
             $user = User::where('id',$user->id)->lockForUpdate()->first();
 
             $order = $user->orders()->create([
                 'plan_date'=>$validation['plan_date'],
+                'price'=>$defaultDP
             ]);
 
             # buat id transaksi nya
@@ -48,7 +56,7 @@ class OrderController extends Controller
             # buat detail transaksi nya karena mungkin dapat memuat banyak barang
             $transaction->transaction_details()->create([
                 'product'=>'Down Payment Weeding Organizer',
-                'sub_total'=>'5000000'
+                'sub_total'=>$defaultDP
             ]);
 
             return response()->json([
@@ -61,9 +69,14 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Order $order)
     {
-        //
+        $order = $order->loadMissing('transactions',
+        'installments','installments.transaction','orderDetails');
+        $transactions = $order->transactions;
+        // $transactions = $transaction->merge($insta)
+        // dd($transactions);
+        return view('dashboard.order.show',compact('order','transactions'));
     }
 
     /**

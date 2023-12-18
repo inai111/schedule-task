@@ -25,4 +25,14 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

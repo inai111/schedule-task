@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->string('transactionable_type');
-            $table->enum('status',['waiting','success'])->default('waiting');
-            $table->string('snap_token')->nullable();
-
-            $table->timestamp('exp_date');
+            $table->string('name');
+            $table->string('address');
+            $table->string('category');
+            $table->string('phone_number');
+            $table->string('bank_name');
+            $table->string('bank_account_name');
+            $table->string('bank_account_number');
             $table->timestamps();
-            $table->unsignedInteger('transactionable_id');
         });
     }
 
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('vendors');
     }
 };

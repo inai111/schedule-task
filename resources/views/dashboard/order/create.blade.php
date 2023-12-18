@@ -66,8 +66,8 @@
                                                     <div class="form-group">
                                                         <label for="exampleInputEmail1">Email
                                                             address</label>
-                                                        <input type="email" readonly class="form-control"
-                                                            id="emailUser" placeholder="Enter email">
+                                                        <input type="email" readonly value="{{auth()->user()->email}}"
+                                                        class="form-control" id="emailUser" placeholder="Enter email">
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="name">Name <span
@@ -105,15 +105,17 @@
                                                         <p class="text-muted">
                                                             Untuk memulai perencanaan, kami membutuhkan setidaknya
                                                             3 bulan. Konfirmasikan terlebih dahulu kepada kami apakah
-                                                            tanggal yang anda ingin kan dapat kami tindak lanjuti atau tidak.
+                                                            tanggal yang anda ingin kan dapat kami tindak lanjuti atau
+                                                            tidak.
                                                         </p>
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label for="plan_date">Plan Date</label>
                                                         <input type="date" required name="plan_date"
-                                                            class="form-control" id="plan_date" placeholder="Plan Date"
-                                                            value="{{ old('plan_date', date('Y-m-d',strtotime('+1 week'))) }}">
+                                                            class="form-control" id="plan_date"
+                                                            placeholder="Plan Date"
+                                                            value="{{ old('plan_date', date('Y-m-d', strtotime('+1 week'))) }}">
                                                         <div class="invalid-feedback"></div>
                                                     </div>
 

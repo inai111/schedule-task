@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->string('transactionable_type');
-            $table->enum('status',['waiting','success'])->default('waiting');
-            $table->string('snap_token')->nullable();
+            $table->string('notes');
+            $table->string('photo');
 
-            $table->timestamp('exp_date');
             $table->timestamps();
-            $table->unsignedInteger('transactionable_id');
+
+            $table->foreignId('schedule_id')
+            ->constrained()->onDelete('cascade');
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('reports');
     }
 };

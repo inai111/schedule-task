@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->string('transactionable_type');
-            $table->enum('status',['waiting','success'])->default('waiting');
-            $table->string('snap_token')->nullable();
+            $table->string('total_price');
+            $table->string('note');
 
-            $table->timestamp('exp_date');
             $table->timestamps();
-            $table->unsignedInteger('transactionable_id');
+            
+            $table->foreignId('vendor_id')
+            ->constrained()->onDelete('cascade');
+            $table->foreignId('order_id')
+            ->constrained()->onDelete('cascade');
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('order_details');
     }
 };

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
@@ -28,7 +27,7 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTransactionRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -38,7 +37,7 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction)
     {
-        $transaction = $transaction->loadMissing('transactionable', 'transaction_details');
+        $transaction = $transaction->loadMissing('transactionable', 'transactionDetails');
         $transactionable = $transaction->transactionable;
 
         # cek apakah $order berasal dari model Order
@@ -64,7 +63,7 @@ class TransactionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTransactionRequest $request, Transaction $transaction)
+    public function update(Request $request, Transaction $transaction)
     {
         //
     }
@@ -83,12 +82,6 @@ class TransactionController extends Controller
 
         // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = false;
-        // Set sanitization on (default)
-        \Midtrans\Config::$isSanitized = true;
-        // Set 3DS transaction for credit card to true
-        \Midtrans\Config::$is3ds = true;
 
         $snapToken = $transaction->snap_token;
 
@@ -109,7 +102,7 @@ class TransactionController extends Controller
         $lastUpdate = Carbon::parse($transaction->updated_at)->addHours(2);
         if ($transaction->status === 'waiting' && (empty($transaction->snap_token) || $lastUpdate->isPast())) {
 
-            $itemDetails = $transaction->transaction_details->map(function ($row) {
+            $itemDetails = $transaction->transactionDetails->map(function ($row) {
                 return [
                     "id" => $row->id,
                     "price" => $row->sub_total,
@@ -122,7 +115,7 @@ class TransactionController extends Controller
             $params = [
                 "transaction_details" => [
                     "order_id" => $transaction->id,
-                    "gross_amount" => $transaction->transaction_details->sum(fn ($detail) => $detail['sub_total'])
+                    "gross_amount" => $transaction->transactionDetails->sum(fn ($detail) => $detail['sub_total'])
                 ],
                 "item_details" => $itemDetails,
                 "customer_details" => [

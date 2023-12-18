@@ -53,7 +53,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($transaction->transaction_details as $detail)
+                    @foreach ($transaction->transactionDetails as $detail)
                         <tr>
                             <td>{{ $detail->qty }}</td>
                             <td>{{ $detail->product }}</td>
@@ -90,7 +90,7 @@
                     <tr>
                         <th>Total:</th>
                         <td>Rp.
-                            {{ number_format($transaction->transaction_details->sum(fn($detail) => $detail['sub_total'])) }}
+                            {{ number_format($transaction->transactionDetails->sum(fn($detail) => $detail['sub_total'])) }}
                         </td>
                     </tr>
                 </table>
