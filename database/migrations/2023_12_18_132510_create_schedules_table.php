@@ -14,16 +14,15 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('date');
-            $table->string('location');
-            $table->string('note');
-            $table->enum('status',['active', 'rejected', 'accepted']);
+            $table->date('date');
+            $table->string('location')->nullable();
+            $table->string('note')->nullable();
 
             $table->timestamps();
 
             $table->foreignId('order_id')
             ->constrained()->onDelete('cascade');
-            $table->foreignId('staf_wo_id')
+            $table->foreignId('staff_wo_id')->nullable()
             ->constrained('users','id')->onDelete('cascade');
         });
     }

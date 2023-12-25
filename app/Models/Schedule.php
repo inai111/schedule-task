@@ -9,9 +9,24 @@ class Schedule extends Model
 {
     use HasFactory;
 
-    public function reports()
+    public static function boot()
     {
-        return $this->hasMany(Report::class);
+        parent::boot();
+
+        static::updated(function($table){
+            if($table->status == 'rejected'){
+                $table->order->total_price -= $table->orderDetails->sum(fn($detail) => $detail['total_price']);
+            }
+        });
+    }
+
+    protected $fillable = [
+        'title','date','location','note'
+    ];
+
+    public function report()
+    {
+        return $this->hasOne(Report::class);
     }
 
     public function order()
@@ -21,6 +36,11 @@ class Schedule extends Model
 
     public function staff()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'staff_wo_id');
+    }
+
+    public function orderDetail()
+    {
+        return $this->hasMany(OrderDetail::class);
     }
 }

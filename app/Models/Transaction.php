@@ -17,7 +17,7 @@ class Transaction extends Model
     {
         parent::boot();
         static::creating(function($table){
-            $table->exp_date = Carbon::now()->addHour(24);
+            $table->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
         });
     }
 

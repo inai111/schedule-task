@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
         auth()->logout();
         request()->session()->regenerate();
         return redirect(route('login'));
-    });
+    })->name('logout');
 
     # untuk verifikasi email
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
@@ -48,6 +48,15 @@ Route::middleware('auth')->group(function () {
         Route::get('transaction/{transaction}/snap',[TransactionController::class,'snap'])->name('transaction.snap');
         Route::resource('transaction',TransactionController::class);
     });
+
+    Route::get('/schedule/{schedule}/createreport',[DashboardController::class,'scheduleReportCreate'])
+    ->name('schedule.report.create');
+    Route::post('/schedule/{schedule}/createreport',[DashboardController::class,'scheduleReportStore'])
+    ->name('schedule.report.store');
+    Route::get('/schedule/{schedule}/edit',[DashboardController::class,'scheduleEdit'])
+    ->name('schedule.edit');
+    Route::put('/schedule/{schedule}',[DashboardController::class,'scheduleUpdate'])
+    ->name('schedule.update');
 
 });
 

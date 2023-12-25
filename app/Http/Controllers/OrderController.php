@@ -20,7 +20,16 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $user = User::find(auth()->user()->id);
+        $orders = $user->orders()->orderByRaw("
+        CASE
+            WHEN order_status = 'ongoing' THEN 1
+            WHEN order_status = 'pending' THEN 2
+            ELSE 3
+        END,
+        updated_at DESC
+        ")->with('schedules','schedules.report')->paginate(5)->appends(request()->query());
+        return view('dashboard.order.index',compact('orders','user'));
     }
 
     /**

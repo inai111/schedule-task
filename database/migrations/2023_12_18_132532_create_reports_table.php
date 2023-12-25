@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('notes');
             $table->string('photo');
-
+            
             $table->timestamps();
-
+            
             $table->foreignId('schedule_id')
             ->constrained()->onDelete('cascade');
         });

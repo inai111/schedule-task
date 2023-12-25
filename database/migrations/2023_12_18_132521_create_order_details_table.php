@@ -15,10 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('total_price');
             $table->string('note');
+            $table->enum('status',['active', 'rejected', 'accepted'])->default('active');
 
             $table->timestamps();
+            $table->softDeletes();
             
             $table->foreignId('vendor_id')
+            ->constrained()->onDelete('cascade');
+            $table->foreignId('schedule_id')->nullable()
             ->constrained()->onDelete('cascade');
             $table->foreignId('order_id')
             ->constrained()->onDelete('cascade');

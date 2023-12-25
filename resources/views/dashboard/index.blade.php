@@ -54,20 +54,25 @@
                                                             <td>
                                                                 @switch($order->status)
                                                                     @case('success')
-                                                                        <span class="badge badge-pill
+                                                                        <span
+                                                                            class="badge badge-pill
                                                                         badge-success">Success</span>
-                                                                        @break
+                                                                    @break
+
                                                                     @case('ongoing')
-                                                                        <span class="badge badge-pill
+                                                                        <span
+                                                                            class="badge badge-pill
                                                                         badge-primary">On-Going</span>
-                                                                        @break
+                                                                    @break
+
                                                                     @default
-                                                                        <span class="badge badge-pill
+                                                                        <span
+                                                                            class="badge badge-pill
                                                                         badge-warning">Pending</span>
                                                                 @endswitch
                                                             </td>
                                                             <td>
-                                                                <a href="{{route('order.show',['order'=>$order->id])}}"
+                                                                <a href="{{ route('order.show', ['order' => $order->id]) }}"
                                                                     class="text-muted">
                                                                     <i class="fas fa-search"></i>
                                                                 </a>
@@ -76,7 +81,8 @@
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="5" class="text-center text-muted">No Active Order</td>
+                                                        <td colspan="5" class="text-center text-muted">No Active
+                                                            Order</td>
                                                     </tr>
                                                 @endif
                                             </tbody>
@@ -134,10 +140,86 @@
                                                     </tr>
                                                 @else
                                                     <tr>
-                                                        <td colspan="6" class="text-center text-muted">No Active Installment</td>
+                                                        <td colspan="6" class="text-center text-muted">No Active
+                                                            Installment</td>
                                                     </tr>
                                                 @endif
                                             </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($user->role_id == 2)
+                                <div class="card">
+                                    <div class="card-header border-0">
+                                        <h3 class="card-title">Unreported Schedule</h3>
+                                    </div>
+                                    <div class="card-body table-responsive p-0">
+                                        <table class="table table-striped table-valign-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nama Pelanggan</th>
+                                                    <th>Meet Date</th>
+                                                    <th>Location</th>
+                                                    <th>Title</th>
+                                                    <th>More</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if ($reports->count() > 0)
+                                                    @foreach ($reports as $schedule)
+                                                        <tr>
+                                                            <td>
+                                                                <img src="{{ asset('storage/ico.png') }}"
+                                                                    alt="Product 1" class="img-circle img-size-32 mr-2">
+                                                            </td>
+                                                            <td>
+                                                                {{ $schedule->order->user->name }}<br>
+                                                                <span class="text-muted">
+                                                                    {{ $schedule->order->user->phone_number }}
+                                                                </span>
+
+                                                            </td>
+                                                            <td>{{ $schedule->date }}</td>
+                                                            <td>
+                                                                <span @class(['text-muted' => empty($schedule->location)])>
+                                                                    {{ $schedule->location ?? 'No Location' }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span @class(['text-muted' => empty($schedule->title)])>
+                                                                    {{ $schedule->title ?? 'No Title' }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ route('schedule.report.create', [
+                                                                    'schedule' => $schedule->id,
+                                                                ]) }}"
+                                                                    class="text-primary">
+                                                                    <i class="fas fa-pen"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <p class="text-muted text-center">All Schedule Reported</p>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                            @if ($scheduleList->count() > 0)
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">
+                                                            {{ $scheduleList->links() }}
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            @endif
                                         </table>
                                     </div>
                                 </div>
@@ -155,60 +237,137 @@
                                 <div class="card-body">
                                     <div>
                                         <h1>{{ date('D, d M Y') }}</h1>
-                                        @if($schedule)
-                                        <div class="d-flex">
-                                            <p class="d-flex flex-column">
-                                                <span class="text-bold text-lg text-warning">Upcomming</span>
-                                                <span>{{$schedule->title}}</span>
-                                            </p>
-                                            <p class="ml-auto d-flex flex-column text-right">
-                                                <span class="">{{$schedule->order_id}}</span>
-                                                <span class="">
-                                                    <i class="fas fa-calendar"></i>
-                                                    {{ date('D, d M Y',strtotime($schedule->date)) }}
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <!-- /.d-flex -->
-                                        @else
-                                        <div class="row">
-                                            <div class="col">
-                                                <p class="text-muted">No Schedule Available</p>
+                                        @if ($schedule)
+                                            <div class="d-flex">
+                                                <p class="d-flex flex-column">
+                                                    <span class="text-bold text-lg text-success">Upcomming</span>
+                                                    <span>{{ $schedule->title }}</span>
+                                                </p>
+                                                <p class="ml-auto d-flex flex-column text-right">
+                                                    <span class="">
+                                                        Order Id : <a
+                                                            href="{{ route('order.show', ['order' => $schedule->order_id]) }}">
+                                                            #{{ str_pad($schedule->order_id, 5, 0, STR_PAD_LEFT) }}
+                                                        </a>
+                                                    </span>
+                                                    <span class="">
+                                                        <i class="fas fa-calendar"></i>
+                                                        {{ date('D, d M Y', strtotime($schedule->date)) }}
+                                                    </span>
+                                                </p>
                                             </div>
-                                        </div>
+                                            <!-- /.d-flex -->
+                                        @else
+                                            <div class="row">
+                                                <div class="col">
+                                                    <p class="text-muted">No Schedule Available</p>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        @if (isset($schedules) && $schedules->count() > 0)
+                                            <table class="table table-striped table-valign-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Meet Date</th>
+                                                        <th>Title</th>
+                                                        <th>Nama Pelanggan</th>
+                                                        <th>Location</th>
+                                                        <th>Order Id</th>
+                                                        <th>More</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if ($scheduleList->count() > 0)
+                                                        @foreach ($scheduleList as $schedule)
+                                                            <tr>
+                                                                <td>{{ $schedule->date }}</td>
+                                                                <td>
+                                                                    <span @class(['text-muted' => empty($schedule->title)])>
+                                                                        {{ $schedule->title ?? 'No Title' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    {{ $schedule->order->user->name }}<br>
+                                                                    <span class="text-muted">
+                                                                        {{ $schedule->order->user->phone_number }}
+                                                                    </span>
+
+                                                                </td>
+                                                                <td>
+                                                                    <span @class(['text-muted' =>
+                                                                    empty($schedule->location)])>
+                                                                        {{ $schedule->location ?? 'No Location' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{route('order.show',
+                                                                    ['order'=>$schedule->order_id])}}">
+                                                                        #{{str_pad($schedule->order_id,5,0,
+                                                                        STR_PAD_LEFT)}}
+                                                                    </a>
+                                                                </td>
+                                                                <td>
+                                                                    <a href="{{ route('schedule.edit', [
+                                                                        'schedule' => $schedule->id,
+                                                                    ]) }}"
+                                                                        class="text-primary">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr>
+                                                            <td colspan="5" class="text-center text-muted">No
+                                                                Schedules</td>
+                                                        </tr>
+                                                    @endif
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">
+                                                            {{ $schedules->links() }}
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                             <!-- /.card -->
 
-                            <div class="card">
-                                <div class="card-header border-0">
-                                    <h3 class="card-title">Report</h3>
-                                </div>
-                                <div class="card-body">
-                                    @if($report)
-                                    <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                                        <p class="text-success text-xl">
-                                            <i class="ion ion-ios-refresh-empty"></i>
-                                        </p>
-                                        <p class="d-flex flex-column text-right">
-                                            <span class="font-weight-bold">
-                                                <i class="ion ion-android-arrow-up text-success"></i> 12%
-                                            </span>
-                                            <span class="text-muted">CONVERSION RATE</span>
-                                        </p>
+                            @if ($user->role_id == 1)
+                                <div class="card">
+                                    <div class="card-header border-0">
+                                        <h3 class="card-title">Report</h3>
                                     </div>
-                                    @else
-                                        <div class="row">
-                                            <div class="col">
-                                                <p class="text-muted">No Report Available</p>
+                                    <div class="card-body">
+                                        @if ($report)
+                                            <div
+                                                class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                                                <p class="text-success text-xl">
+                                                    <i class="ion ion-ios-refresh-empty"></i>
+                                                </p>
+                                                <p class="d-flex flex-column text-right">
+                                                    <span class="font-weight-bold">
+                                                        <i class="ion ion-android-arrow-up text-success"></i> 12%
+                                                    </span>
+                                                    <span class="text-muted">CONVERSION RATE</span>
+                                                </p>
                                             </div>
-                                        </div>
-                                    @endif
-                                    <!-- /.d-flex -->
+                                        @else
+                                            <div class="row">
+                                                <div class="col">
+                                                    <p class="text-muted">No Report Available</p>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <!-- /.d-flex -->
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                         <!-- /.col-md-6 -->
                     </div>

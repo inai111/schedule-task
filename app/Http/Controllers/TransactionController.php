@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Schedule;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -39,6 +42,8 @@ class TransactionController extends Controller
     {
         $transaction = $transaction->loadMissing('transactionable', 'transactionDetails');
         $transactionable = $transaction->transactionable;
+
+        $this->cekStatus($transaction);
 
         # cek apakah $order berasal dari model Order
         if ($transactionable instanceof \App\Models\Order) {
@@ -78,28 +83,12 @@ class TransactionController extends Controller
 
     public function snap(Transaction $transaction)
     {
-        $this->authorize('update',$transaction);
+        $this->authorize('update', $transaction);
 
-        // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
 
-        $snapToken = $transaction->snap_token;
-
-        # jika ada token tersimpan di database, cek apakah status sudah berhasil
-        if (!empty($snapToken)) {
-            /**
-             * @var Object
-             */
-            $cek = \Midtrans\Transaction::status($transaction->id);
-
-            # kalau sudah terbayar maka update data transaction
-            if ($cek->transaction_status === 'settlement') {
-                return $this->transactionpaid($transaction);
-            }
-        }
-
         # cek apakah sudah expired tokennya
-        $lastUpdate = Carbon::parse($transaction->updated_at)->addHours(2);
+        $lastUpdate = Carbon::parse($transaction->exp_date);
         if ($transaction->status === 'waiting' && (empty($transaction->snap_token) || $lastUpdate->isPast())) {
 
             $itemDetails = $transaction->transactionDetails->map(function ($row) {
@@ -127,6 +116,7 @@ class TransactionController extends Controller
             ];
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
+            $transaction->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
             $transaction->snap_token = $snapToken;
             $transaction->save();
         }
@@ -140,23 +130,71 @@ class TransactionController extends Controller
         $transaction->save();
 
         $order = $transaction->transactionable;
-
         # barangkali $order merupakan isi model angsuran
         if ($order instanceof \App\Models\Installment) {
             # kalau sudah sesuai angsuran maka ubah status order ke success
             $order = $order->order;
-        }else{
-            # jika masih waiting, maka dapat di pastikan jika ini sedang bayar DP
-            if($order->status === 'waiting'){
-                $order->status = 'ongoing';
-                $order->save();
+        }
 
-                # buat schedule
+
+        if ($order->order_status === 'pending') {
+            $order->order_status = 'ongoing';
+            // $order->save();
+
+            # buat schedule pertama kali
+
+            # cek tanggal untuk buat tanggal yang tidak bentrok
+            $date = Carbon::now()->addDays(7)->toDateString();
+            $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charge', function ($query) use ($date) {
+                $query->where('date', $date);
+            })->get();
+            
+            while ($staffLapangan->count()==0) {
+                $date = Carbon::parse($date)->addDay()->toDateString();
+                $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charge', function ($query) use ($date) {
+                    $query->where('date', $date);
+                })->get();
+            }
+
+            # create first schedule
+            if($order->schedules->count()==0){
+                $order->schedules()->create([
+                    'staff_wo_id'=>$staffLapangan->first()->id,
+                    'title'=>'First Meeting',
+                    'date'=>$date,
+                    'status'=>'active',
+                ]);
             }
 
         }
 
         # kirim status no content untuk reload page
-        return response('',204);
+        return response('', 204);
+    }
+
+    private function cekStatus($transaction)
+    {
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+
+        $snapToken = $transaction->snap_token;
+
+        # jika ada token tersimpan di database, cek apakah status sudah berhasil
+        if (!empty($snapToken)) {
+            try {
+                /**
+                 * @var Object
+                 */
+                $cek = \Midtrans\Transaction::status($transaction->id);
+
+                # kalau sudah terbayar maka update data transaction
+                if ($cek->transaction_status === 'settlement') {
+                    return $this->transactionpaid($transaction);
+                }
+            } catch (Exception $e) {
+                $transaction->snap_token = '';
+                // $transaction->save();
+            }
+        }
     }
 }
