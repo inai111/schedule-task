@@ -21,7 +21,7 @@ class Schedule extends Model
     }
 
     protected $fillable = [
-        'title','date','location','note'
+        'title','date','location','note','staff_wo_id'
     ];
 
     public function report()
@@ -41,6 +41,6 @@ class Schedule extends Model
 
     public function orderDetail()
     {
-        return $this->hasMany(OrderDetail::class);
+        return $this->hasOne(OrderDetail::class);
     }
 }

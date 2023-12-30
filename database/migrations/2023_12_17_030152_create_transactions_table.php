@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('slug');
             $table->string('transactionable_type');
             $table->enum('status',['waiting','success'])->default('waiting');
             $table->string('snap_token')->nullable();

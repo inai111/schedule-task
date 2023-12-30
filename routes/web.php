@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -43,8 +44,10 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('order',OrderController::class);
     Route::resource('user',UserController::class);
+    Route::resource('report',ReportController::class);
 
     Route::middleware('verified')->group(function(){
+        Route::get('transaction/{transaction}/transactionpaid',[TransactionController::class,'transactionpaid']);
         Route::get('transaction/{transaction}/snap',[TransactionController::class,'snap'])->name('transaction.snap');
         Route::resource('transaction',TransactionController::class);
     });

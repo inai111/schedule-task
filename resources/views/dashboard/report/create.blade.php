@@ -1,11 +1,11 @@
 @php
-    // if(old('vendors')){
-    //     dd(old('vendors'));
+    // if(old('vendor')){
+    //     dd(old('vendor'));
     // }
 @endphp
 <x-layout title="Dashboard" class="">
     <x-slot:head>
-        @vite(['/resources/js/create_order.js'])
+        @vite(['/resources/js/create_report.js'])
     </x-slot>
     <x-dashboard>
         <div class="content-wrapper">
@@ -40,7 +40,7 @@
                                     <span class="text-muted">{{ date('D, d F Y', strtotime($schedule->date)) }}</span>
                                 </div>
                                 <div>
-                                    <form id="createReport" method="post"
+                                    <form id="createReport" method="post" enctype="multipart/form-data"
                                         action="{{ route('schedule.report.store', ['schedule' => $schedule->id]) }}">
                                         @csrf
                                         <div class="mb-3 pb-3 border-bottom">
@@ -48,16 +48,16 @@
                                         </div>
                                         <div class="row gap-3 align-items-center" style="gap:2rem">
                                             <div class="form-group shadow col-auto p-2 rounded text-center"
-                                                style="width:200px;height:200px;border:4px #6c757d dashed;
+                                                style="min-width:200px;min-height:200px;border:4px #6c757d dashed;
                                             background-color:#e3e3e3">
                                                 <img src="" class="border-0" width="200" height="200"
-                                                    alt="Photo" style="object-fit:cover;object-position:center"
+                                                    alt="Photo" style="object-fit:contain;object-position:center"
                                                     id="photoPreview">
                                             </div>
                                             <div class="form-group col-7">
                                                 <label for="photo">Photo <span class="text-danger">*</span></label>
-                                                <input type="file" accept="image/jpg,image/png" required
-                                                    name="photo" @class(['form-control', 'is-invalid' => $errors->has('photo')]) id="photo"
+                                                <input type="file" accept="image/jpg,image/png" name="photo"
+                                                    @class(['form-control', 'is-invalid' => $errors->has('photo')]) id="photo"
                                                     value="{{ old('photo') }}">
                                                 @error('photo')
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -66,120 +66,165 @@
                                         </div>
                                         <div class="form-group">
                                             <label>Report Note : <span class="text-danger">*</span></label>
-                                            <textarea @class(['form-control', 'is-invalid' => $errors->has('note')])
-                                                name="note" rows="3">{{ old('note') }}</textarea>
+                                            <textarea @class(['form-control', 'is-invalid' => $errors->has('note')]) name="note" rows="3">{{ old('note') }}</textarea>
                                             @error('note')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="mb-3 pb-3 border-bottom">
-                                            <strong>Vendors</strong><br />
+                                            <strong>Vendor</strong><br />
                                         </div>
                                         <div class="mb-3">
-                                        @if (!empty(old('vendors')))
-
-                                            @foreach (old('vendors') as $vendor)
-                                                <div class="mx-3 px-3 py-1 border">
-                                                    <div class="form-group">
-                                                        <label for="phone_number">Phone Number <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" required name="vendors[]['name']"
-                                                            class="form-control" id="phone_number" placeholder="name"
-                                                            value="{{ old('vendors[][name]') }}">
-                                                        <div class="invalid-feedback"></div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="phone_number">Phone Number <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" required name="phone_number"
-                                                            class="form-control" id="phone_number"
-                                                            placeholder="0802223311"
-                                                            value="{{ old('phone_number', auth()->user()->phone_number) }}">
-                                                        <div class="invalid-feedback"></div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @else
                                             <div class="mx-3 px-3 py-1 border">
                                                 <div class="form-group">
-                                                    <label for="vendors[]['id']">Vendor<span
-                                                            class="text-danger">*</span></label>
-                                                            <select name="vendors[]['id']" class="custom-select">
-                                                                <option selected value="">Select Vendor</option>
-                                                                @foreach ($vendorList as $item )
-                                                                <option value="{{$item->id}}">{{$item->name}}</option>
-                                                                @endforeach
-                                                              </select>
+                                                    <label for="vendor[id]">Vendor</label>
+                                                    <select name="vendor[id]"
+                                                    @class(['custom-select', 'is-invalid' => $errors->has('vendor.id')])>
+                                                        <option selected value="">New Vendor</option>
+                                                        @foreach ($vendorList as $item)
+                                                            <option value="{{ $item->id }}"
+                                                                @selected(old('vendor.id') == $item->id)>{{ $item->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('vendor.phone_number')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
                                                 </div>
                                                 <div class="pl-4">
-                                                <div class="form-group">
-                                                    <label for="vendors[]['name']">Vendor Name<span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="text" required name="vendors[]['name']"
-                                                        class="form-control" id="vendors[]['name']" placeholder="Name">
+                                                    <div class="form-group">
+                                                        <label for="vendor.name">Vendor Name<span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" required name="vendor[name]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.name')])
+                                                            id="vendor.name" placeholder="Name"
+                                                            value="{{old('vendor.name')}}">
+                                                        @error('vendor.name')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.phone_number">Vendor Phone Number<span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" required name="vendor[phone_number]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.phone_number')])
+                                                            id="vendor.phone_number" placeholder="08871xxx"
+                                                            value="{{old('vendor.phone_number')}}">
+                                                        @error('vendor.phone_number')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.category">Vendor Category<span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" required name="vendor[category]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.category')])
+                                                            id="vendor.category"
+                                                            placeholder="Katering" 
+                                                            value="{{old('vendor.category')}}">
+                                                        @error('vendor.category')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.bank_name">Vendor Bank Name<span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" required name="vendor[bank_name]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_name')])
+                                                            id="vendor.bank_name"
+                                                            placeholder="Bank Name"
+                                                            value="{{old('vendor.bank_name')}}">
+                                                        @error('vendor.bank_name')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.bank_account_name">
+                                                            Vendor Bank Account Name<span class="text-danger">
+                                                                *</span></label>
+                                                        <input type="text" required name="vendor[bank_account_name]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_account_name')])
+                                                            id="vendor.bank_account_name"
+                                                            placeholder="Bank Account Name"
+                                                            value="{{old('vendor.bank_account_name')}}">
+                                                        @error('vendor.bank_account_name')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.bank_account_number">
+                                                            Vendor Bank Account Number<span class="text-danger">
+                                                                *</span></label>
+                                                        <input type="text" required
+                                                            name="vendor[bank_account_number]"
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_account_number')])
+                                                            id="vendor.bank_account_number"
+                                                            placeholder="Bank Account Number"
+                                                            value="{{old('vendor.bank_account_number')}}">
+                                                            
+                                                        @error('vendor.bank_account_number')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="vendor.address">Vendor Address
+                                                            <span class="text-danger">*</span>
+                                                        </label>
+                                                        <textarea @class(['form-control', 'is-invalid' => $errors->has('vendor.address')])
+                                                            name="vendor[address]"
+                                                            placeholder="Address" rows="3"
+                                                            >{{old('vendor.address')}}</textarea>
+                                                        @error('vendor.address')
+                                                            <div class="invalid-feedback">
+                                                                {{ $message }}
+                                                            </div>
+                                                        @enderror
+                                                    </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="vendors[]['phone_number']">Vendor Phone Number<span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="text" required name="vendors[]['phone_number']"
-                                                        class="form-control" id="vendors[]['phone_number']"
-                                                        placeholder="08871xxx">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['category']">Vendor Category<span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="text" required name="vendors[]['category']"
-                                                        class="form-control" id="vendors[]['category']"
-                                                        placeholder="Katering">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['bank_name']">Vendor Bank Name<span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="text" required name="vendors[]['bank_name']"
-                                                        class="form-control" id="vendors[]['bank_name']"
-                                                        placeholder="Bank Name">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['bank_account_name']">
-                                                        Vendor Bank Account Name<span class="text-danger">
-                                                        *</span></label>
-                                                    <input type="text" required name="vendors[]['bank_account_name']"
-                                                        class="form-control" id="vendors[]['bank_account_name']"
-                                                        placeholder="Bank Account Name">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['bank_account_number']">
-                                                        Vendor Bank Account Number<span class="text-danger">
-                                                        *</span></label>
-                                                    <input type="text" required name="vendors[]['bank_account_number']"
-                                                        class="form-control" id="vendors[]['bank_account_number']"
-                                                        placeholder="Bank Account Number">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['address']">Vendor Address
-                                                        <span class="text-danger">*</span>
-                                                    </label>
-                                                    <textarea class="form-control" name="vendors[]['address']"
-                                                    placeholder="Address"rows="3"></textarea>
-                                                </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="vendors[]['total_price']">
+                                                    <label for="vendor.total_price">
                                                         Order Total Price<span class="text-danger">
-                                                        *</span></label>
-                                                    <input type="text" required name="vendors[]['total_price']"
-                                                        class="form-control" id="vendors[]['total_price']"
-                                                        placeholder="Total Price">
+                                                            *</span></label>
+                                                    <input type="text" required name="vendor[total_price]"
+                                                        @class(['form-control', 'is-invalid' => $errors->has('vendor.total_price')])
+                                                        id="vendor.total_price"
+                                                        placeholder="Total Price"
+                                                        value="{{old('vendor.total_price')}}">
+                                                    @error('vendor.total_price')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="vendors[]['note']">Order Note</label>
-                                                    <textarea class="form-control" name="vendors[]['note']"
-                                                    placeholder="Note ..."rows="3"></textarea>
+                                                    <label for="vendor.note">Order Note</label>
+                                                    <textarea @class(['form-control', 'is-invalid' => $errors->has('vendor.note')])
+                                                        name="vendor[note]" placeholder="Note ..."rows="3"
+                                                        >{{old('vendor.note')}}</textarea>
+                                                    @error('vendor.note')
+                                                        <div class="invalid-feedback">
+                                                            {{ $message }}
+                                                        </div>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                        @endif
                                         </div>
-                                        <button type="submit" class="btn btn-primary updateButtonStepper">Next</button>
+                                        <button type="submit"
+                                            class="btn btn-primary updateButtonStepper">Next</button>
                                     </form>
                                 </div>
                             </div>

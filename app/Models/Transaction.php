@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Ramsey\Uuid\Uuid;
 
 class Transaction extends Model
 {
@@ -18,6 +19,7 @@ class Transaction extends Model
         parent::boot();
         static::creating(function($table){
             $table->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
+            $table->slug = Uuid::uuid1();
         });
     }
 

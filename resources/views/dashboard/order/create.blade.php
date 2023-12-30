@@ -88,9 +88,9 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label>Address <span class="text-danger">*</span></label>
-                                                        <textarea class="form-control" required name="address" rows="3" placeholder="Address ...">
-                                                            {{ old('address', auth()->user()->address) }}
-                                                        </textarea>
+                                                        <textarea class="form-control" required name="address" rows="3"
+                                                        placeholder="Address ..."
+                                                        >{{ old('address', auth()->user()->address) }}</textarea>
                                                         <div class="invalid-feedback"></div>
                                                     </div>
                                                     <button type="submit"

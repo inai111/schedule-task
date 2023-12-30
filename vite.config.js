@@ -6,9 +6,15 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css', 'resources/js/app.js',
-                'resources/js/dashboard.js'
+                'resources/js/dashboard.js','resources/js/create_report.js',
+                'resources/js/create_order.js'
             ],
-            refresh: true,
+            refresh: [
+                'resources/js/**',
+                'resources/css/**',
+                'routes/**',
+                'resources/views/**',
+            ],
         }),
     ],
 });

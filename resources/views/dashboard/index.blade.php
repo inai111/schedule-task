@@ -52,7 +52,7 @@
                                                             </td>
                                                             <td>Rp. {{ number_format($order->total_price) }}</td>
                                                             <td>
-                                                                @switch($order->status)
+                                                                @switch($order->order_status)
                                                                     @case('success')
                                                                         <span
                                                                             class="badge badge-pill
@@ -117,7 +117,8 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if ($orders->first()->installments->count() > 0)
+                                                @if ($orders->count() > 0 &&
+                                                $orders->first()->installments->count() > 0)
                                                     <tr>
                                                         <td>
                                                             <img src="{{ asset('storage/ico.png') }}" alt="Product 1"

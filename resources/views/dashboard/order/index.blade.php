@@ -76,10 +76,8 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5">
-                                        <p>
-                                            No Order Available
-                                        </p>
+                                    <td colspan="6">
+                                        <p class="text-muted">No Order Available</p>
                                     </td>
                                 </tr>
                             @endif

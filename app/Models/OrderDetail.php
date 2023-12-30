@@ -10,6 +10,9 @@ class OrderDetail extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    protected $fillable = [
+        'total_price','note','status','vendor_id','order_id','schedule_id'
+    ];
 
     public function order()
     {
@@ -18,7 +21,7 @@ class OrderDetail extends Model
 
     public function vendors()
     {
-        return $this->belongsTo(Vendor::class);
+        return $this->belongsTo(Vendor::class,'vendor_id');
     }
 
     public function schedule()

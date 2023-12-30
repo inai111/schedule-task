@@ -8,6 +8,9 @@ use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Ramsey\Uuid\Uuid;
 
 class TransactionController extends Controller
 {
@@ -103,7 +106,7 @@ class TransactionController extends Controller
 
             $params = [
                 "transaction_details" => [
-                    "order_id" => $transaction->id,
+                    "order_id" => $transaction->slug,
                     "gross_amount" => $transaction->transactionDetails->sum(fn ($detail) => $detail['sub_total'])
                 ],
                 "item_details" => $itemDetails,
@@ -115,58 +118,64 @@ class TransactionController extends Controller
                 "enabled_payments" => ["bca_klikpay"]
             ];
 
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            $transaction->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
-            $transaction->snap_token = $snapToken;
+            try{
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                $transaction->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
+                $transaction->snap_token = $snapToken;
+            }catch(Exception $e){
+                if((int)$e->getCode()===400){
+                    $transaction->slug = Uuid::uuid1();
+                }
+            }
             $transaction->save();
         }
 
         return response()->json(['token' => $snapToken], 200);
     }
 
-    private function transactionpaid($transaction)
+    public function transactionpaid($transaction)
     {
-        $transaction->status = 'success';
-        $transaction->save();
-
-        $order = $transaction->transactionable;
-        # barangkali $order merupakan isi model angsuran
-        if ($order instanceof \App\Models\Installment) {
-            # kalau sudah sesuai angsuran maka ubah status order ke success
-            $order = $order->order;
-        }
-
-
-        if ($order->order_status === 'pending') {
-            $order->order_status = 'ongoing';
-            // $order->save();
-
-            # buat schedule pertama kali
-
-            # cek tanggal untuk buat tanggal yang tidak bentrok
-            $date = Carbon::now()->addDays(7)->toDateString();
-            $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charge', function ($query) use ($date) {
-                $query->where('date', $date);
-            })->get();
-            
-            while ($staffLapangan->count()==0) {
-                $date = Carbon::parse($date)->addDay()->toDateString();
-                $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charge', function ($query) use ($date) {
+        DB::transaction(function()use($transaction){
+            $transaction->status = 'success';
+            $transaction->save();
+    
+            $order = $transaction->transactionable;
+            # barangkali $order merupakan isi model angsuran
+            if ($order instanceof \App\Models\Installment) {
+                # kalau sudah sesuai angsuran maka ubah status order ke success
+                $order = $order->order;
+            }
+    
+            if ($order->order_status === 'pending') {
+                $order->order_status = 'ongoing';
+                $order->save();
+    
+                # buat schedule pertama kali
+    
+                # cek tanggal untuk buat tanggal yang tidak bentrok
+                $date = Carbon::now()->addDays(7)->toDateString();
+                $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charges', function ($query) use ($date) {
                     $query->where('date', $date);
                 })->get();
-            }
+                
+                while ($staffLapangan->count()==0) {
+                    $date = Carbon::parse($date)->addDay()->toDateString();
+                    $staffLapangan = User::where('role_id', 2)->whereDoesntHave('charges', function ($query) use ($date) {
+                        $query->where('date', $date);
+                    })->get();
+                }
 
-            # create first schedule
-            if($order->schedules->count()==0){
-                $order->schedules()->create([
-                    'staff_wo_id'=>$staffLapangan->first()->id,
-                    'title'=>'First Meeting',
-                    'date'=>$date,
-                    'status'=>'active',
-                ]);
+                
+                # create first schedule
+                if($order->schedules->count()==0){
+                    $order->schedules()->create([
+                        'staff_wo_id'=>$staffLapangan->first()->id,
+                        'title'=>'First Meeting',
+                        'date'=>$date,
+                    ]);
+                }
             }
-
-        }
+        });
 
         # kirim status no content untuk reload page
         return response('', 204);
@@ -177,12 +186,12 @@ class TransactionController extends Controller
         // Set your Merchant Server Key
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
 
-        $snapToken = $transaction->snap_token;
+        // $snapToken = $transaction->snap_token;
 
         # jika ada token tersimpan di database, cek apakah status sudah berhasil
-        if (!empty($snapToken)) {
+        if ($transaction->status == 'waiting') {
             try {
-                /**
+                /** 
                  * @var Object
                  */
                 $cek = \Midtrans\Transaction::status($transaction->id);
@@ -193,7 +202,7 @@ class TransactionController extends Controller
                 }
             } catch (Exception $e) {
                 $transaction->snap_token = '';
-                // $transaction->save();
+                $transaction->save();
             }
         }
     }

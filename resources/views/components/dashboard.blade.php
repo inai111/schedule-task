@@ -110,6 +110,14 @@
                         </ul>
                     </li>
                     @endcan
+                    @can('viewAny',App\Models\Report::class)
+                    <li class="nav-item">
+                        <a href="{{route('report.index')}}" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Reported</p>
+                        </a>
+                    </li>
+                    @endcan
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

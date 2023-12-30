@@ -26,6 +26,10 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(1)->create(['username'=>'uuu','email'=>'sasmitobaguss@gmail.com']);
         # staff 1
         \App\Models\User::factory(2)->create(['role_id'=>2]);
+        \App\Models\User::factory()->create([
+            'username'=>'jay',
+            'role_id'=>2
+        ]);
         # staff 2
         \App\Models\User::factory(2)->create(['role_id'=>3]);
     }

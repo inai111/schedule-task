@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ScheduleReported;
+use App\Mail\ScheduleUpdated;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Models\Vendor;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
@@ -47,12 +52,16 @@ class DashboardController extends Controller
                 END ASC
                 ')->get();
 
-                $installments = $orders->first()->installments()->whereHas('transaction', function ($query) {
-                    $query->where('status', 'waiting');
-                });
-
-                $schedule = $orders->first()->schedules()->orderByDesc('id')->first();
-                $report = $orders->first()->schedules()->orderByDesc('id')->first();
+                $installments = [];
+                $schedule = [];
+                $report = [];
+                if($orders->count() > 0) {
+                    $installments = $orders->first()->installments()->whereHas('transaction', function ($query) {
+                        $query->where('status', 'waiting');
+                    });
+                    $schedule = $orders->first()->schedules()->orderByDesc('id')->first();
+                    $report = $orders->first()->schedules()->orderByDesc('id')->first();
+                }
 
                 $compact = compact('user', 'orders', 'installments', 'schedule', 'report');
             break;
@@ -75,21 +84,48 @@ class DashboardController extends Controller
         $this->authorize('createReport',$schedule);
 
         $validation = $request->validate([
-            'photo'=>'required|image|mimes:png,jpg|min:2048',
-            'notes'=>'string|nullable',
-            'vendors'=>'array|min:1|required',
-            'vendors.*.id'=>'exists:vendor,id',
-            'vendors.*.name'=>'required|string',
-            'vendors.*.address'=>'required|string',
-            'vendors.*.category'=>'required|string',
-            'vendors.*.phone_number'=>'required|string',
-            'vendors.*.bank_name'=>'required|string',
-            'vendors.*.bank_account_name'=>'required|string',
-            'vendors.*.bank_account_number'=>'required|string',
-            'vendors.*.total_price'=>'required|string',
-            'vendors.*.note'=>'required|string',
+            'photo'=>'required|image|mimes:png,jpg|max:2048',
+            'note'=>'string|required',
+            'vendor.id'=>'nullable|exists:vendors,id',
+            'vendor.name'=>'required|string',
+            'vendor.address'=>'required|string',
+            'vendor.category'=>'required|string',
+            'vendor.phone_number'=>'required|string',
+            'vendor.bank_name'=>'required|string',
+            'vendor.bank_account_name'=>'required|string',
+            'vendor.bank_account_number'=>'required|string',
+            'vendor.total_price'=>'required|string',
+            'vendor.note'=>'nullable|string',
         ]);
-        return view('dashboard.report.create', compact('schedule'));
+
+        DB::transaction(function()use($validation,$schedule){
+            # buat vendor baru
+            if($validation['vendor']['id']==null){
+                $vendor = Vendor::create(Arr::except($validation['vendor'],['total_price','note']));
+            }else{
+                $vendor = Vendor::find($validation['vendor']['id']);
+            }
+
+            # buat report
+            $validation['photo'] = $validation['photo']->store('assets/img','public');
+            $schedule->report()->create(Arr::only($validation,['photo','note']));
+
+            # buat order Detail
+            $schedule->orderDetail()->create([
+                'order_id' => $schedule->order_id,
+                'vendor_id' => $vendor->id,
+                'total_price' => $validation['vendor']['total_price'],
+                'note' => $validation['vendor']['note'],
+            ]);
+
+            # update total price pada Order
+            $schedule->order()->increment('total_price',$validation['vendor']['total_price']);
+
+            # send email
+            Mail::to($schedule->order->user)->queue(new ScheduleReported($schedule));
+        });
+
+        return redirect(route('report.index'))->with(['message'=>"Report Added"]);
     }
 
     public function scheduleEdit(Schedule $schedule)
@@ -112,6 +148,8 @@ class DashboardController extends Controller
 
         try {
             $schedule->update($validation);
+
+            Mail::to($schedule->order->user)->queue(new ScheduleUpdated($schedule));
 
             return redirect('/');
         }catch(Exception $err){

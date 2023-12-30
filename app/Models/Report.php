@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Report extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'total_price','note','photo'
+    ];
 
     public function schedule()
     {

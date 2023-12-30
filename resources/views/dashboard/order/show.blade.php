@@ -35,7 +35,7 @@
                             <div class="card">
                                 <div class="card-header">
                                     <h5 class="card-title">
-                                        Order Detail
+                                        Order Details
                                         <span @class([
                                             'badge',
                                             'badge-pill',
@@ -215,6 +215,7 @@
                                                                 <div class="d-flex flex-column">
                                                                     <strong>Date and Location :</strong>
                                                                     <div class="text-muted">
+                                                                        {{ date('D, d F Y',strtotime($schedule->date)) }}<br />
                                                                         @if ($schedule->location)
                                                                             {{ $schedule->location }}<br />
                                                                         @else
@@ -222,7 +223,6 @@
                                                                                 Waiting Our Staff
                                                                             </span><br />
                                                                         @endif
-                                                                        {{ $schedule->date }}<br />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -234,9 +234,9 @@
                                                                         <p class="text-muted">{{ $schedule->note }}</p>
                                                                     </div>
                                                                 @endif
-                                                                <div class="border shadows" style="min-height: 120px">
-                                                                    @if ($schedule->orderDetail->count()>0)
-                                                                        {{-- <p>{{ $schedule->orderDetails->note }}</p> --}}
+                                                                <div class="border shadows p-2" style="min-height: 120px">
+                                                                    @if ($schedule->orderDetail)
+                                                                    <p>{{ $schedule->orderDetails->note }}</p>
                                                                     @endif
                                                                 </div>
                                                             </div>

@@ -63,7 +63,7 @@ class OrderController extends Controller
             # buat id transaksi nya
             $transaction = $order->transactions()->create();
             # buat detail transaksi nya karena mungkin dapat memuat banyak barang
-            $transaction->transaction_details()->create([
+            $transaction->transactionDetails()->create([
                 'product'=>'Down Payment Weeding Organizer',
                 'sub_total'=>$defaultDP
             ]);
@@ -83,6 +83,7 @@ class OrderController extends Controller
         $order = $order->loadMissing('transactions',
         'installments','installments.transaction','orderDetails');
         $transactions = $order->transactions;
+        // dd($order->schedules);
         // $transactions = $transaction->merge($insta)
         // dd($transactions);
         return view('dashboard.order.show',compact('order','transactions'));
