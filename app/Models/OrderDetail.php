@@ -19,7 +19,7 @@ class OrderDetail extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function vendors()
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class,'vendor_id');
     }

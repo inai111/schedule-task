@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ScheduleReported;
 use App\Mail\ScheduleUpdated;
+use App\Models\Order;
 use App\Models\Schedule;
 use App\Models\User;
 use App\Models\Vendor;
@@ -24,6 +25,9 @@ class DashboardController extends Controller
         # member biasa
         switch ($user->role_id) {
             case 1:
+                $user = User::find(auth()->user()->id);
+                $orders = Order::where('order_status','ongoing')->paginate(5)->appends(request()->query());
+                $compact = compact('orders','user');
             break;
             case 2:
                 $scheduleList = $user->charges()->where('date','>=',Carbon::now()->toDateString())
@@ -86,6 +90,7 @@ class DashboardController extends Controller
         $validation = $request->validate([
             'photo'=>'required|image|mimes:png,jpg|max:2048',
             'note'=>'string|required',
+            'next_schedule'=>'nullable',
             'vendor.id'=>'nullable|exists:vendors,id',
             'vendor.name'=>'required|string',
             'vendor.address'=>'required|string',
@@ -120,6 +125,33 @@ class DashboardController extends Controller
 
             # update total price pada Order
             $schedule->order()->increment('total_price',$validation['vendor']['total_price']);
+            
+            if(isset($validation['next_schedule'])&& $validation['next_schedule']=='on'){
+                $user = User::find(auth()->user()->id);
+
+                # cek tanggal untuk buat tanggal yang tidak bentrok
+                $date = Carbon::now()->addDays(7)->toDateString();
+                $scheduleDate = Schedule::where([
+                    ['date','=', $date],
+                    ['staff_wo_id','=', $user->id],
+                ])->first();
+
+                while ($scheduleDate) {
+                    $date = Carbon::parse($date)->addDay()->toDateString();
+                    $scheduleDate = Schedule::where([
+                        ['date','=', $date],
+                        ['staff_wo_id','=', $user->id],
+                    ])->first();
+                }
+
+                
+                # create first schedule
+                $schedule->order->schedules()->create([
+                    'staff_wo_id'=>$user->id,
+                    'title'=>'Next Meeting',
+                    'date'=>$date,
+                ]);
+            }
 
             # send email
             Mail::to($schedule->order->user)->queue(new ScheduleReported($schedule));
@@ -156,5 +188,13 @@ class DashboardController extends Controller
             
             return redirect()->back()->withErrors(['message'=>$err->getMessage()]);
         }
+    }
+
+    public function scheduleDelete(Schedule $schedule)
+    {
+        $this->authorize('delete',$schedule);
+        
+        $schedule->delete();
+        return redirect()->back();
     }
 }

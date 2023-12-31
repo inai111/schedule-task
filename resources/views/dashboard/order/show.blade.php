@@ -3,7 +3,7 @@
 @endphp
 <x-layout title="Dashboard" class="">
     <x-slot:head>
-        @vite(['/resources/js/create_order.js'])
+        @vite(['/resources/js/show_order.js'])
     </x-slot>
     <x-dashboard>
         <div class="content-wrapper">
@@ -56,36 +56,30 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Product</th>
-                                                <th>Description</th>
+                                                <th>Vendor Name</th>
+                                                <th>Category</th>
                                                 <th>Subtotal</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Down Payment Weeding Organizer</td>
-                                                <td></td>
-                                                <td>Rp. {{ number_format(5000000) }}</td>
-                                            </tr>
                                             @foreach ($order->orderDetails as $detail)
                                                 <tr>
-                                                    <td>{{ $detail->qty }}</td>
-                                                    <td>{{ $detail->product }}</td>
-                                                    <td>{{ $detail->description }}</td>
-                                                    <td>Rp. {{ number_format($detail->sub_total) }}</td>
+                                                    <td>{{ $detail->vendor->name }}</td>
+                                                    <td>{{ $detail->vendor->category }}</td>
+                                                    <td>Rp. {{ number_format($detail->total_price) }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                @if ($order->order_details)
+                                                @if ($order->orderDetails)
                                                     <th colspan="2" class="text-right">Total</th>
                                                     <th>Rp.
-                                                        {{ number_format($order->order_details->sum(fn($dtl) => $dtl->total_price)) }}
+                                                        {{ number_format($order->orderDetails->sum(fn($dtl) => $dtl->total_price)) }}
                                                     </th>
                                                 @else
                                                     <th colspan="2" class="text-right">Total</th>
-                                                    <th>Rp. {{ number_format(5000000) }}</th>
+                                                    <th>Rp. 0</th>
                                                 @endif
                                             </tr>
                                         </tfoot>
@@ -162,6 +156,12 @@
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
+                                    @if (auth()->user()->role_id == 2)
+                                        <div class="mb-3">
+                                            <a href="{{ route('order.schedule.create', ['order' => $order->id]) }}"
+                                                class="btn btn-success btn-sm px-3">Create New Schedule</a>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         <div class="col-5 col-sm-3">
                                             <div class="nav flex-column nav-tabs h-100" id="vert-tabs-tab"
@@ -185,65 +185,84 @@
                                         </div>
                                         <div class="col-7 col-sm-9">
                                             @if ($order->schedules->count() > 0)
-                                                @foreach ($order->schedules as $schedule)
-                                                    <div @class([
-                                                        'tab-pane text-left fade',
-                                                        'show active' => $loop->index == 0,
-                                                    ])
-                                                        id="vert-tabs-{{ $loop->index }}" role="tabpanel"
-                                                        aria-labelledby="vert-tabs-{{ $loop->index }}">
-                                                        <div>
-                                                            <h3>{{ $schedule->title }}</h3>
+                                                <div class="tab-content">
+                                                    @foreach ($order->schedules as $schedule)
+                                                        <div @class([
+                                                            'tab-pane text-left fade',
+                                                            'show active' => $loop->index == 0,
+                                                        ])
+                                                            id="vert-tabs-{{ $loop->index }}" role="tabpanel"
+                                                            aria-labelledby="vert-tabs-{{ $loop->index }}">
+                                                            <div>
+                                                                <h3>{{ $schedule->title }}</h3>
+                                                                @if (\Carbon\Carbon::parse($schedule->date)->isFuture())
+                                                                    <div class="mb-3 text-right">
+                                                                        <div class="btn-group">
+                                                                            <a href="{{ route('schedule.edit', ['schedule' => $schedule->id]) }}"
+                                                                                class="btn btn-sm px-3 btn-primary">
+                                                                                <i class="far fa-edit"></i>
+                                                                            </a>
+                                                                            <button type="button"
+                                                                                data-href="{{ route('schedule.delete', ['schedule' => $schedule->id]) }}"
+                                                                                class="btn btn-sm px-3 btn-danger triggerDelete">
+                                                                                <i class="fas fa-trash"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
+                                                                <div class="d-flex mb-3 justify-content-between">
+                                                                    <div class="d-flex flex-column">
+                                                                        <strong>Meet Our Staff :</strong>
+                                                                        <div>
+                                                                            {{ $schedule->staff->name }}
+                                                                            (<span class="text-muted">
+                                                                                {{ $schedule->staff->role->description }}
+                                                                            </span>)
+                                                                            <br />
+                                                                            <div class="text-muted"
+                                                                                style="font-size:13px">
+                                                                                {{ $schedule->staff->email ?? 'No Email' }}<br />
+                                                                                {{ $schedule->staff->number_phone ?? 'No Phone Number' }}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 
-                                                            <div class="d-flex mb-3 justify-content-between">
-                                                                <div class="d-flex flex-column">
-                                                                    <strong>Meet Our Staff :</strong>
-                                                                    <div>
-                                                                        {{ $schedule->staff->name }}
-                                                                        (<span class="text-muted">
-                                                                            {{ $schedule->staff->role->description }}
-                                                                        </span>)
-                                                                        <br />
-                                                                        <div class="text-muted" style="font-size:13px">
-                                                                            {{ $schedule->staff->email ?? 'No Email' }}<br />
-                                                                            {{ $schedule->staff->number_phone ?? 'No Phone Number' }}
+                                                                    {{-- Location --}}
+                                                                    <div class="d-flex flex-column">
+                                                                        <strong>Date and Location :</strong>
+                                                                        <div class="text-muted">
+                                                                            {{ date('D, d F Y', strtotime($schedule->date)) }}<br />
+                                                                            @if ($schedule->location)
+                                                                                {{ $schedule->location }}<br />
+                                                                            @else
+                                                                                <span class="badge bg-warning">
+                                                                                    Waiting Our Staff
+                                                                                </span><br />
+                                                                            @endif
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
-                                                                {{-- Location --}}
-                                                                <div class="d-flex flex-column">
-                                                                    <strong>Date and Location :</strong>
-                                                                    <div class="text-muted">
-                                                                        {{ date('D, d F Y',strtotime($schedule->date)) }}<br />
-                                                                        @if ($schedule->location)
-                                                                            {{ $schedule->location }}<br />
-                                                                        @else
-                                                                            <span class="badge bg-warning">
-                                                                                Waiting Our Staff
-                                                                            </span><br />
+                                                                <div class="mb-3">
+                                                                    @if ($schedule->note)
+                                                                        <div class="callout callout-info mb-3">
+                                                                            <h5>Note:</h5>
+                                                                            <p class="text-muted">{{ $schedule->note }}
+                                                                            </p>
+                                                                        </div>
+                                                                    @endif
+                                                                    <div class="border shadows p-2"
+                                                                        style="min-height: 120px">
+                                                                        @if ($schedule->orderDetail)
+                                                                            <p>{{ $schedule->orderDetail->note }}</p>
                                                                         @endif
                                                                     </div>
                                                                 </div>
+                                                                </p>
                                                             </div>
-
-                                                            <div class="mb-3">
-                                                                @if ($schedule->note)
-                                                                    <div class="callout callout-info mb-3">
-                                                                        <h5>Note:</h5>
-                                                                        <p class="text-muted">{{ $schedule->note }}</p>
-                                                                    </div>
-                                                                @endif
-                                                                <div class="border shadows p-2" style="min-height: 120px">
-                                                                    @if ($schedule->orderDetail)
-                                                                    <p>{{ $schedule->orderDetails->note }}</p>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                            </p>
                                                         </div>
-                                                    </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             @endif
                                         </div>
                                     </div>
@@ -262,5 +281,30 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
+
+        <div class="modal" id="modalConfirmation" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                  
+                    </div>
+                    <div class="modal-body">
+                        <p>Yakin ingin menghapus data ini</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form method="post">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </x-dashboard>
 </x-layout>

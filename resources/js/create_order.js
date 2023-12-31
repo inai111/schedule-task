@@ -2,6 +2,7 @@ import '/vendor/almasaeed2010/adminlte/plugins/bs-stepper/js/bs-stepper.min.js';
 import '/vendor/almasaeed2010/adminlte/plugins/bs-stepper/css/bs-stepper.min.css';
 import '/vendor/almasaeed2010/adminlte//plugins/toastr/toastr.min.css';
 import '/vendor/almasaeed2010/adminlte/plugins/toastr/toastr.min.js';
+
 $(document).ready(function () {
     // buat order berarti sudah login dan email ter-verification
     let username = document.querySelector(`meta[name=username]`).content;
@@ -92,4 +93,6 @@ $(document).ready(function () {
 
         })
     })
+
+
 })

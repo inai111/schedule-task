@@ -113,7 +113,8 @@
                     @can('viewAny',App\Models\Report::class)
                     <li class="nav-item">
                         <a href="{{route('report.index')}}" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            {{-- <i class="nav-icon fas fa-tachometer-alt"></i> --}}
+                            <i class="nav-icon fas fa-file-alt"></i>
                             <p>Reported</p>
                         </a>
                     </li>

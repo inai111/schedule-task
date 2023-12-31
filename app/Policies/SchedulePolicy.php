@@ -48,9 +48,9 @@ class SchedulePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Report $report): bool
+    public function delete(User $user, Schedule $schedule): bool
     {
-        //
+        return $user->role_id == 2 && $schedule->staff_wo_id == $user->id;
     }
 
     /**

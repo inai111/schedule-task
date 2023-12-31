@@ -23,6 +23,14 @@ class ReportController extends Controller
             $reports = Report::whereHas('schedule',function($query)use($user){
                 $query->where('staff_wo_id',$user->id);
             })->with('schedule')->get();
+        }else{
+            $reports = Report::orderByDesc('id');
+            if(request('order')){
+                $reports = $reports->whereHas('schedule',function($query){
+                    $query->where('order_id',request('order'));
+                })->with('schedule');
+            }
+            $reports = $reports->get();
         }
 
         return view('dashboard.report.index',compact('reports'));
@@ -49,7 +57,7 @@ class ReportController extends Controller
      */
     public function show(string $id)
     {
-        $report = Report::with('schedule','schedule.orderDetail','schedule.orderDetail.vendors')->find($id);
+        $report = Report::with('schedule','schedule.orderDetail','schedule.orderDetail.vendor')->find($id);
         // dd($report->schedule->orderDetail);
         return view('dashboard.report.show',compact('report'));
     }

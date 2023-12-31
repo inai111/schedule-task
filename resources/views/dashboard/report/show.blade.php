@@ -35,11 +35,15 @@
                                 <strong>Title Schedule: {{ $report->schedule->title }}</strong><br />
                                 <span class="text-muted">Location : {{ $report->schedule->location }}</span><br />
                                 <span class="text-muted">Date : {{ $report->schedule->date }}</span><br />
-                                <strong>Note:</strong> {{$report->note}}
+                                @if (auth()->user()->role_id == 1)
+                                <span class="text-muted">Staff On Field : {{ $report->schedule->staff->name }}</span><br />
+                                @endif
+                                <strong>Note:</strong> {{ $report->note }}
+                                
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="card shadow">
                         <div class="card-header border-0">
                             <h2>
@@ -57,41 +61,33 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Rp. {{number_format($report->schedule->orderDetail->total_price)}}</td>
-                                        <td>{{$report->schedule->orderDetail->vendors->name}}</td>
+                                        <td>Rp. {{ number_format($report->schedule->orderDetail->total_price) }}</td>
+                                        <td>{{ $report->schedule->orderDetail->vendor->name }}</td>
                                         <td>
                                             <div class="flex-column d-flex">
-                                                <div><strong>Status User : </strong> <span @class([
-                                                    'badge',
-                                                    'bg-secondary'=>$report->schedule->orderDetail->status=='active',
-                                                    'bg-success'=>$report->schedule->orderDetail->status=='accepted',
-                                                    'bg-danger'=>$report->schedule->orderDetail->status=='rejected'
-                                                ])>
-                                                    {{$report->schedule->orderDetail->status}}</span>
-                                                </div>
                                                 <div><strong>Date Order : </strong>
                                                     <span class="text-muted">
-                                                        {{$report->schedule->orderDetail->created_at}}
+                                                        {{ $report->schedule->orderDetail->created_at }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Category : </strong>
                                                     <span class="text-muted">
-                                                        {{$report->schedule->orderDetail->vendors->category}}
+                                                        {{ $report->schedule->orderDetail->vendor->category }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Phone Number : </strong>
                                                     <span class="text-muted">
-                                                        {{$report->schedule->orderDetail->vendors->phone_number}}
+                                                        {{ $report->schedule->orderDetail->vendor->phone_number }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Address : </strong>
                                                     <span class="text-muted">
-                                                        {{$report->schedule->orderDetail->vendors->address}}
+                                                        {{ $report->schedule->orderDetail->vendor->address }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Note : </strong>
                                                     <span class="text-muted">
-                                                        {{$report->schedule->orderDetail->note}}
+                                                        {{ $report->schedule->orderDetail->note }}
                                                     </span>
                                                 </div>
                                             </div>

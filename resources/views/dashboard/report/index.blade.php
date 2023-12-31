@@ -27,6 +27,9 @@
                             @foreach ($reports as $report)
                                 <div class="border-top border-bottom">
                                     <h2>#{{ str_pad($report->id, 5, 0, STR_PAD_LEFT) }}</h2>
+                                    @if (auth()->user()->role_id==1)
+                                        <span class="text-muted">By: {{$report->schedule->staff->name}}</span>
+                                    @endif
                                     <div class="d-flex" style="gap:2rem">
                                         <p class="text-justify">
                                             <img style="width:350px;max-height:450px;margin-inline:1rem;

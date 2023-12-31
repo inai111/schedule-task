@@ -78,8 +78,7 @@
                                             <div class="mx-3 px-3 py-1 border">
                                                 <div class="form-group">
                                                     <label for="vendor[id]">Vendor</label>
-                                                    <select name="vendor[id]"
-                                                    @class(['custom-select', 'is-invalid' => $errors->has('vendor.id')])>
+                                                    <select name="vendor[id]" @class(['custom-select', 'is-invalid' => $errors->has('vendor.id')])>
                                                         <option selected value="">New Vendor</option>
                                                         @foreach ($vendorList as $item)
                                                             <option value="{{ $item->id }}"
@@ -98,9 +97,8 @@
                                                         <label for="vendor.name">Vendor Name<span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" required name="vendor[name]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.name')])
-                                                            id="vendor.name" placeholder="Name"
-                                                            value="{{old('vendor.name')}}">
+                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.name')]) id="vendor.name"
+                                                            placeholder="Name" value="{{ old('vendor.name') }}">
                                                         @error('vendor.name')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -111,9 +109,12 @@
                                                         <label for="vendor.phone_number">Vendor Phone Number<span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" required name="vendor[phone_number]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.phone_number')])
-                                                            id="vendor.phone_number" placeholder="08871xxx"
-                                                            value="{{old('vendor.phone_number')}}">
+                                                            @class([
+                                                                'form-control',
+                                                                'is-invalid' => $errors->has('vendor.phone_number'),
+                                                            ]) id="vendor.phone_number"
+                                                            placeholder="08871xxx"
+                                                            value="{{ old('vendor.phone_number') }}">
                                                         @error('vendor.phone_number')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -124,10 +125,12 @@
                                                         <label for="vendor.category">Vendor Category<span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" required name="vendor[category]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.category')])
-                                                            id="vendor.category"
-                                                            placeholder="Katering" 
-                                                            value="{{old('vendor.category')}}">
+                                                            @class([
+                                                                'form-control',
+                                                                'is-invalid' => $errors->has('vendor.category'),
+                                                            ]) id="vendor.category"
+                                                            placeholder="Katering"
+                                                            value="{{ old('vendor.category') }}">
                                                         @error('vendor.category')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -138,10 +141,12 @@
                                                         <label for="vendor.bank_name">Vendor Bank Name<span
                                                                 class="text-danger">*</span></label>
                                                         <input type="text" required name="vendor[bank_name]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_name')])
-                                                            id="vendor.bank_name"
+                                                            @class([
+                                                                'form-control',
+                                                                'is-invalid' => $errors->has('vendor.bank_name'),
+                                                            ]) id="vendor.bank_name"
                                                             placeholder="Bank Name"
-                                                            value="{{old('vendor.bank_name')}}">
+                                                            value="{{ old('vendor.bank_name') }}">
                                                         @error('vendor.bank_name')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -152,11 +157,14 @@
                                                         <label for="vendor.bank_account_name">
                                                             Vendor Bank Account Name<span class="text-danger">
                                                                 *</span></label>
-                                                        <input type="text" required name="vendor[bank_account_name]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_account_name')])
-                                                            id="vendor.bank_account_name"
+                                                        <input type="text" required
+                                                            name="vendor[bank_account_name]"
+                                                            @class([
+                                                                'form-control',
+                                                                'is-invalid' => $errors->has('vendor.bank_account_name'),
+                                                            ]) id="vendor.bank_account_name"
                                                             placeholder="Bank Account Name"
-                                                            value="{{old('vendor.bank_account_name')}}">
+                                                            value="{{ old('vendor.bank_account_name') }}">
                                                         @error('vendor.bank_account_name')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -169,11 +177,14 @@
                                                                 *</span></label>
                                                         <input type="text" required
                                                             name="vendor[bank_account_number]"
-                                                            @class(['form-control', 'is-invalid' => $errors->has('vendor.bank_account_number')])
+                                                            @class([
+                                                                'form-control',
+                                                                'is-invalid' => $errors->has('vendor.bank_account_number'),
+                                                            ])
                                                             id="vendor.bank_account_number"
                                                             placeholder="Bank Account Number"
-                                                            value="{{old('vendor.bank_account_number')}}">
-                                                            
+                                                            value="{{ old('vendor.bank_account_number') }}">
+
                                                         @error('vendor.bank_account_number')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -184,10 +195,10 @@
                                                         <label for="vendor.address">Vendor Address
                                                             <span class="text-danger">*</span>
                                                         </label>
-                                                        <textarea @class(['form-control', 'is-invalid' => $errors->has('vendor.address')])
-                                                            name="vendor[address]"
-                                                            placeholder="Address" rows="3"
-                                                            >{{old('vendor.address')}}</textarea>
+                                                        <textarea @class([
+                                                            'form-control',
+                                                            'is-invalid' => $errors->has('vendor.address'),
+                                                        ]) name="vendor[address]" placeholder="Address" rows="3">{{ old('vendor.address') }}</textarea>
                                                         @error('vendor.address')
                                                             <div class="invalid-feedback">
                                                                 {{ $message }}
@@ -200,10 +211,12 @@
                                                         Order Total Price<span class="text-danger">
                                                             *</span></label>
                                                     <input type="text" required name="vendor[total_price]"
-                                                        @class(['form-control', 'is-invalid' => $errors->has('vendor.total_price')])
-                                                        id="vendor.total_price"
+                                                        @class([
+                                                            'form-control',
+                                                            'is-invalid' => $errors->has('vendor.total_price'),
+                                                        ]) id="vendor.total_price"
                                                         placeholder="Total Price"
-                                                        value="{{old('vendor.total_price')}}">
+                                                        value="{{ old('vendor.total_price') }}">
                                                     @error('vendor.total_price')
                                                         <div class="invalid-feedback">
                                                             {{ $message }}
@@ -212,9 +225,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="vendor.note">Order Note</label>
-                                                    <textarea @class(['form-control', 'is-invalid' => $errors->has('vendor.note')])
-                                                        name="vendor[note]" placeholder="Note ..."rows="3"
-                                                        >{{old('vendor.note')}}</textarea>
+                                                    <textarea @class(['form-control', 'is-invalid' => $errors->has('vendor.note')]) name="vendor[note]" placeholder="Note ..."rows="3">{{ old('vendor.note') }}</textarea>
                                                     @error('vendor.note')
                                                         <div class="invalid-feedback">
                                                             {{ $message }}
@@ -222,9 +233,18 @@
                                                     @enderror
                                                 </div>
                                             </div>
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center" style="gap:1rem">
+                                                    <button type="submit"
+                                                        class="btn btn-primary updateButtonStepper">Next</button>
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="customSwitch1" name="next_schedule">
+                                                        <label class="custom-control-label" for="customSwitch1">Create Next Schedule</label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button type="submit"
-                                            class="btn btn-primary updateButtonStepper">Next</button>
                                     </form>
                                 </div>
                             </div>

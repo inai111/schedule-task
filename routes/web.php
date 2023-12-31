@@ -42,6 +42,8 @@ Route::middleware('auth')->group(function () {
         return back()->with('message', 'Verification link sent!');
     })->middleware(['throttle:3,1'])->name('verification.send');
 
+    Route::get('order/{order}/schedule-create',[OrderController::class,'scheduleCreate'])
+    ->name('order.schedule.create');
     Route::resource('order',OrderController::class);
     Route::resource('user',UserController::class);
     Route::resource('report',ReportController::class);
@@ -58,6 +60,8 @@ Route::middleware('auth')->group(function () {
     ->name('schedule.report.store');
     Route::get('/schedule/{schedule}/edit',[DashboardController::class,'scheduleEdit'])
     ->name('schedule.edit');
+    Route::delete('/schedule/{schedule}',[DashboardController::class,'scheduleDelete'])
+    ->name('schedule.delete');
     Route::put('/schedule/{schedule}',[DashboardController::class,'scheduleUpdate'])
     ->name('schedule.update');
 

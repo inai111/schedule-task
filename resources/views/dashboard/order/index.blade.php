@@ -62,10 +62,16 @@
                                     </tr>
                                     <tr class="expandable-body">
                                         <td colspan="6">
-                                            @if ($order->schedules->count() > 0)
-                                                <p>
-                                                    No Order Available
-                                                </p>
+                                            @if ($order->orderDetails->count() > 0)
+                                                <table class="table table-borderless">
+                                                    @foreach ($order->orderDetails as $detail)
+                                                        <tr>
+                                                            <td>{{ $detail->vendor->name }}</td>
+                                                            <td>{{ $detail->vendor->category }}</td>
+                                                            <td>Rp. {{ number_format($detail->total_price) }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </table>
                                             @else
                                                 <p>
                                                     No Schedule
