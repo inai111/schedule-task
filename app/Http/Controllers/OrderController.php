@@ -22,18 +22,55 @@ class OrderController extends Controller
     public function index()
     {
         $user = User::find(auth()->user()->id);
-        $orders = $user->orders()->orderByRaw("
-        CASE
-            WHEN order_status = 'ongoing' THEN 1
-            WHEN order_status = 'pending' THEN 2
-            ELSE 3
-        END,
-        updated_at DESC
-        ")->with('schedules', 'schedules.report')
-            ->with(['orderDetails' => function ($q) {
-                $q->orderByDesc('id');
-            }])
-            ->paginate(5)->appends(request()->query());
+        switch($user->role_id){
+            case 1:
+                $orders = Order::orderByRaw("
+                CASE
+                    WHEN order_status = 'ongoing' THEN 1
+                    WHEN order_status = 'pending' THEN 2
+                    ELSE 3
+                END,
+                updated_at DESC
+                ")->with('schedules', 'schedules.report')
+                    ->with(['orderDetails' => function ($q) {
+                        $q->orderByDesc('id');
+                    }])
+                    ->paginate(5)->appends(request()->query());
+                break;
+            case 2:
+                $orders = Order::whereIn('order_status',['ongoing','pending'])
+                ->whereHas('schedules',function($qq)use($user){
+                    $qq->where('staff_wo_id',$user->id);
+                })
+                ->orderByRaw("
+                CASE
+                    WHEN order_status = 'ongoing' THEN 1
+                    WHEN order_status = 'pending' THEN 2
+                    ELSE 3
+                END,
+                updated_at DESC
+                ")->with('schedules', 'schedules.report')
+                    ->with(['orderDetails' => function ($q) {
+                        $q->orderByDesc('id');
+                    }])
+                    ->paginate(5)->appends(request()->query());
+                break;
+            default:
+                $orders = $user->orders()->orderByRaw("
+                CASE
+                    WHEN order_status = 'ongoing' THEN 1
+                    WHEN order_status = 'pending' THEN 2
+                    ELSE 3
+                END,
+                updated_at DESC
+                ")->with('schedules', 'schedules.report')
+                    ->with(['orderDetails' => function ($q) {
+                        $q->orderByDesc('id');
+                    }])
+                    ->paginate(5)->appends(request()->query());
+                break;
+
+        }
         return view('dashboard.order.index', compact('orders', 'user'));
     }
 

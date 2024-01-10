@@ -19,7 +19,9 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
+        $transactions = Transaction::where()
+        ->get();
+        return view('dashboard.transaction.index');
     }
 
     /**

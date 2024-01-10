@@ -195,18 +195,23 @@
                                                             aria-labelledby="vert-tabs-{{ $loop->index }}">
                                                             <div>
                                                                 <h3>{{ $schedule->title }}</h3>
-                                                                @if (\Carbon\Carbon::parse($schedule->date)->isFuture())
+                                                                @if (\Carbon\Carbon::parse($schedule->date)->isFuture() && 
+                                                                auth()->user()->role_id != 4)
                                                                     <div class="mb-3 text-right">
                                                                         <div class="btn-group">
-                                                                            <a href="{{ route('schedule.edit', ['schedule' => $schedule->id]) }}"
-                                                                                class="btn btn-sm px-3 btn-primary">
-                                                                                <i class="far fa-edit"></i>
-                                                                            </a>
-                                                                            <button type="button"
-                                                                                data-href="{{ route('schedule.delete', ['schedule' => $schedule->id]) }}"
-                                                                                class="btn btn-sm px-3 btn-danger triggerDelete">
-                                                                                <i class="fas fa-trash"></i>
-                                                                            </button>
+                                                                            @can('update', $schedule)
+                                                                                <a href="{{ route('schedule.edit', ['schedule' => $schedule->id]) }}"
+                                                                                    class="btn btn-sm px-3 btn-primary">
+                                                                                    <i class="far fa-edit"></i>
+                                                                                </a>
+                                                                            @endcan
+                                                                            @can('delete', $schedule)
+                                                                                <button type="button"
+                                                                                    data-href="{{ route('schedule.delete', ['schedule' => $schedule->id]) }}"
+                                                                                    class="btn btn-sm px-3 btn-danger triggerDelete">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </button>
+                                                                            @endcan
                                                                         </div>
                                                                     </div>
                                                                 @endif
@@ -283,14 +288,14 @@
         <!-- /.content-wrapper -->
 
         <div class="modal" id="modalConfirmation" tabindex="-1">
-                <div class="modal-dialog">
-                  <div class="modal-content">
+            <div class="modal-dialog">
+                <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Delete Confirmation</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                          </button>
-                  
+                        </button>
+
                     </div>
                     <div class="modal-body">
                         <p>Yakin ingin menghapus data ini</p>
