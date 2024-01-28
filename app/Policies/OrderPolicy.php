@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Order;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\Response;
 
 class OrderPolicy
@@ -30,7 +31,14 @@ class OrderPolicy
      */
     public function create(User $user): bool
     {
-        return $user->email_verified_at!==null && $user->role_id == 4;
+        $cek = $user->orders()->whereIn('order_status',['ongoing','pending'])->count();
+        return $user->email_verified_at!==null && $user->role_id == 4 && $cek == 0;
+    }
+
+    public function createSchedule(User $user, Order $order): bool
+    {
+        $cek = Carbon::parse($order->plan_date)->isFuture();
+        return $cek && $user->role_id == 2;
     }
 
     /**

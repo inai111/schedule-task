@@ -22,7 +22,7 @@ class ReportController extends Controller
         if($user->role_id != 1){
             $reports = Report::whereHas('schedule',function($query)use($user){
                 $query->where('staff_wo_id',$user->id);
-            })->with('schedule')->get();
+            })->with('schedule')->orderByDesc('id')->get();
         }else{
             $reports = Report::orderByDesc('id');
             if(request('order')){

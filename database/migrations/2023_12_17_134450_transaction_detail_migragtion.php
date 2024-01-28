@@ -16,11 +16,13 @@ return new class extends Migration
             $table->unsignedInteger('qty')->default(1);
             $table->string('product');
             $table->string('description')->nullable();
-            $table->string('sub_total');
+            $table->string('price');
             $table->timestamps();
 
             $table->foreignId('transaction_id')->constrained()
             ->onDelete('cascade');
+            $table->foreignId('order_detail_id')->nullable()
+            ->constrained()->onDelete('cascade');
         });
     }
 

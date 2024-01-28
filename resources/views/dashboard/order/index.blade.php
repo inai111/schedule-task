@@ -27,7 +27,7 @@
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>OrderId</th>
+                                <th>Order Id</th>
                                 <th>Status</th>
                                 <th>Total Installment</th>
                                 <th>Plan Date</th>
@@ -67,14 +67,20 @@
                                                     @foreach ($order->orderDetails as $detail)
                                                         <tr>
                                                             <td>{{ $detail->vendor->name }}</td>
-                                                            <td>{{ $detail->vendor->category }}</td>
-                                                            <td>Rp. {{ number_format($detail->total_price) }}</td>
+                                                            <td>{{ $detail->vendor->category->name }}</td>
+                                                            <td>{{Illuminate\Support\Number::currency($detail->total,in:"IDR",locale:'id')}}</td>
                                                         </tr>
                                                     @endforeach
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th colspan="2">Total</th>
+                                                            <th>{{Illuminate\Support\Number::currency($order->total_price,in:"IDR",locale:'id')}}</th>
+                                                        </tr>
+                                                    </tfoot>
                                                 </table>
                                             @else
                                                 <p>
-                                                    No Schedule
+                                                    No Vendor Selected
                                                 </p>
                                             @endif
                                         </td>

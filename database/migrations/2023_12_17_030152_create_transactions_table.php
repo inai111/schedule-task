@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->uuid('slug');
-            $table->string('transactionable_type');
             $table->enum('status',['waiting','success'])->default('waiting');
+            $table->enum('method',['transfer','cash'])->nullable();
+            $table->string('total')->nullable();
             $table->string('snap_token')->nullable();
 
-            $table->timestamp('exp_date');
+            $table->dateTime('exp_date')->nullable();
             $table->timestamps();
-            $table->unsignedInteger('transactionable_id');
+            $table->foreignId('order_id')->constrained();
         });
     }
 

@@ -31,7 +31,7 @@
         </div>
         <!-- /.col -->
         <div class="col-sm-4 invoice-col">
-            <b>Invoice #{{ str_pad($transaction->id, 5, '0', STR_PAD_LEFT) }}</b><br>
+            <b>Invoice : {{ str_pad($transaction->slug, 5, '0', STR_PAD_LEFT) }}</b><br>
             <br>
             <b>Order ID:</b> {{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}<br>
             <b>Payment Due:</b> {{ date('d/m/Y 00:00:00', strtotime($transaction->exp_date)) }}<br>
@@ -58,43 +58,21 @@
                             <td>{{ $detail->qty }}</td>
                             <td>{{ $detail->product }}</td>
                             <td>{{ $detail->description }}</td>
-                            <td>Rp. {{ number_format($detail->sub_total) }}</td>
+                            <td>
+                                {{ Illuminate\Support\Number::currency($detail->price, in: 'IDR', locale: 'id') }}
+                            </td>
                         </tr>
                     @endforeach
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-right"><b>Total : </b></th>
+                        <th>
+                            {{ Illuminate\Support\Number::currency($transaction->total, in: 'IDR', locale: 'id') }}
+                        </th>
+                    </tr>
+                </tfoot>
                 </tbody>
             </table>
-        </div>
-        <!-- /.col -->
-    </div>
-    <!-- /.row -->
-
-    <div class="row justify-content-end">
-        <!-- accepted payments column -->
-        <div class="col-6">
-            <div class="callout callout-info">
-                <h5><i class="fas fa-info"></i> Note:</h5>
-                <p class="text-muted">
-                    Untuk memulai pesanan, anda akan dikenakan biaya DP (Down
-                    Payment)
-                    terlebih dahulu untuk memesan jasa kami, yang kemudian anda
-                    akan mendapatkan
-                    jadwal dari kami untuk dapat segera memulai perencanaan.
-                </p>
-            </div>
-        </div>
-        <div class="col-6 float-right">
-            <p class="lead">Amount Due {{ date('d/m/Y', strtotime($transaction->created_at)) }}</p>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <tr>
-                        <th>Total:</th>
-                        <td>Rp.
-                            {{ number_format($transaction->transactionDetails->sum(fn($detail) => $detail['sub_total'])) }}
-                        </td>
-                    </tr>
-                </table>
-            </div>
         </div>
         <!-- /.col -->
     </div>
@@ -110,9 +88,11 @@
                 </button>
             @endcan
             @if ($transaction->status == 'success')
-                <h3 class="text-right">
-                    <strong class="text-success">PAID</strong>
-                </h3>
+                {{-- <h3 class="text-right">
+                        <strong class="text-success">PAID</strong>
+                    </h3> --}}
+                <a class="btn btn-primary float-right rounded-pill"
+                    href="{{ route('order.show', ['order' => $order->id]) }}">Order Details</a>
             @endif
         </div>
     </div>

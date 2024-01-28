@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NotificationTransaction;
 use App\Models\Order;
 use App\Models\Schedule;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -22,7 +24,7 @@ class OrderController extends Controller
     public function index()
     {
         $user = User::find(auth()->user()->id);
-        switch($user->role_id){
+        switch ($user->role_id) {
             case 1:
                 $orders = Order::orderByRaw("
                 CASE
@@ -38,11 +40,11 @@ class OrderController extends Controller
                     ->paginate(5)->appends(request()->query());
                 break;
             case 2:
-                $orders = Order::whereIn('order_status',['ongoing','pending'])
-                ->whereHas('schedules',function($qq)use($user){
-                    $qq->where('staff_wo_id',$user->id);
-                })
-                ->orderByRaw("
+                $orders = Order::whereIn('order_status', ['ongoing', 'pending'])
+                    ->whereHas('schedules', function ($qq) use ($user) {
+                        $qq->where('staff_wo_id', $user->id);
+                    })
+                    ->orderByRaw("
                 CASE
                     WHEN order_status = 'ongoing' THEN 1
                     WHEN order_status = 'pending' THEN 2
@@ -69,7 +71,6 @@ class OrderController extends Controller
                     }])
                     ->paginate(5)->appends(request()->query());
                 break;
-
         }
         return view('dashboard.order.index', compact('orders', 'user'));
     }
@@ -79,6 +80,7 @@ class OrderController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',Order::class);
         return view('dashboard.order.create');
     }
 
@@ -103,12 +105,18 @@ class OrderController extends Controller
             ]);
 
             # buat id transaksi nya
-            $transaction = $order->transactions()->create();
+            $transaction = $order->transactions()->create(
+                ['total'=>$defaultDP]
+            );
             # buat detail transaksi nya karena mungkin dapat memuat banyak barang
+            $planDate = date("F, d-m-Y",strtotime($validation['plan_date']));
             $transaction->transactionDetails()->create([
-                'product' => 'Down Payment Weeding Organizer',
-                'sub_total' => $defaultDP
+                'product' => 'Down Payment',
+                'description' => "Event Date Plan : {$planDate}",
+                'price' => $defaultDP
             ]);
+
+            Mail::to($user->email)->queue(new NotificationTransaction($transaction));
 
             return response()->json([
                 'message' => "Order Created",
@@ -124,13 +132,10 @@ class OrderController extends Controller
     {
         $order = $order->loadMissing(
             'transactions',
-            'installments',
-            'installments.transaction',
             'orderDetails'
         );
         $transactions = $order->transactions;
-        // dd($order->schedules);
-        // $transactions = $transaction->merge($insta)
+
         // dd($transactions);
         return view('dashboard.order.show', compact('order', 'transactions'));
     }
@@ -142,8 +147,11 @@ class OrderController extends Controller
     {
         //
     }
+
     public function scheduleCreate(Order $order)
     {
+        $this->authorize('createSchedule', $order);
+
         $user = User::find(auth()->user()->id);
 
         # cek tanggal untuk buat tanggal yang tidak bentrok
@@ -152,15 +160,22 @@ class OrderController extends Controller
             ['date', '=', $date],
             ['staff_wo_id', '=', $user->id],
         ])->first();
-        
+
+        $plan_date = Carbon::parse($order->plan_date)->toDateString();
+        if ($date == $plan_date || $date > $plan_date) {
+            $date = Carbon::now()->addDay()->toDateString();
+            if ($date == $plan_date || $date > $plan_date) {
+                return redirect()->back()->withErrors('message','No Date Left');
+            }
+        }
+
         while ($scheduleDate) {
             $date = Carbon::parse($date)->addDay()->toDateString();
             $scheduleDate = Schedule::where([
                 ['date', '=', $date],
                 ['staff_wo_id', '=', $user->id],
-                ])->first();
+            ])->first();
         }
-            
 
         # create first schedule
         $order->schedules()->create([

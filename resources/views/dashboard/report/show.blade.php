@@ -60,39 +60,42 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach ($report->schedule->orderDetail as $od)
                                     <tr>
-                                        <td>Rp. {{ number_format($report->schedule->orderDetail->total_price) }}</td>
-                                        <td>{{ $report->schedule->orderDetail->vendor->name }}</td>
+                                        <td>{{ Illuminate\Support\Number::currency($od->total,in:'IDR',locale:'id') }}</td>
+                                        <td>{{ $od->vendor->name }}</td>
                                         <td>
                                             <div class="flex-column d-flex">
                                                 <div><strong>Date Order : </strong>
                                                     <span class="text-muted">
-                                                        {{ $report->schedule->orderDetail->created_at }}
+                                                        {{ $od->created_at }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Category : </strong>
                                                     <span class="text-muted">
-                                                        {{ $report->schedule->orderDetail->vendor->category }}
+                                                        {{ $od->vendor->category->name }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Phone Number : </strong>
                                                     <span class="text-muted">
-                                                        {{ $report->schedule->orderDetail->vendor->phone_number }}
+                                                        {{ $od->vendor->phone_number }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Address : </strong>
                                                     <span class="text-muted">
-                                                        {{ $report->schedule->orderDetail->vendor->address }}
+                                                        {{ $od->vendor->address }}
                                                     </span>
                                                 </div>
                                                 <div><strong>Note : </strong>
                                                     <span class="text-muted">
-                                                        {{ $report->schedule->orderDetail->note }}
+                                                        {{ $od->note }}
                                                     </span>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
+                                    @endforeach
+
                                 </tbody>
                             </table>
                         </div>

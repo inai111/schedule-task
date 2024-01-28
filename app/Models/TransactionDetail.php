@@ -15,4 +15,9 @@ class TransactionDetail extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    public function orderDetail()
+    {
+        return $this->belongsTo(OrderDetail::class,'order_detail_id');
+    }
 }

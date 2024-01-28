@@ -65,6 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/schedule/{schedule}',[DashboardController::class,'scheduleUpdate'])
     ->name('schedule.update');
 
+    Route::post('/vendor',[DashboardController::class,'vendorStore'])
+    ->name('vendor.store');
+    Route::get('/vendor/{vendor}',[DashboardController::class,'vendorDetail'])
+    ->name('vendor.show');
+
 });
 
 Route::middleware('guest')->group(function () {

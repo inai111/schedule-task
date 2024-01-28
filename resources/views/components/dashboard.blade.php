@@ -84,41 +84,51 @@
                             <p>Dashboard</p>
                         </a>
                     </li>
-                    <li class="nav-item menu-open">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-book-open"></i>
-                            <p>
-                                Order
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="{{ route('order.index') }}" class="nav-link">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List</p>
-                                </a>
-                            </li>
-                            @can('create', App\Model\Order::class)
-                                <li class="nav-item">
-                                    <a href="{{ route('order.create') }}"
-                                        class="nav-link @if (request()->is('order/create')) active @endif">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Create</p>
-                                    </a>
-                                </li>
-                            @endcan
-                        </ul>
-                    </li>
-                    @can('viewAny', App\Models\Report::class)
+                    @if (auth()->user()->role_id == 3)
                         <li class="nav-item">
-                            <a href="{{ route('report.index') }}" class="nav-link">
-                                {{-- <i class="nav-icon fas fa-tachometer-alt"></i> --}}
+                            <a href="{{route('transaction.index')}}" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
-                                <p>Reported</p>
+                                <p>Transaction</p>
                             </a>
                         </li>
-                    @endcan
+                    @else
+                        <li class="nav-item menu-open">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-book-open"></i>
+                                <p>
+                                    Order
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('order.index') }}" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List</p>
+                                    </a>
+                                </li>
+                                @can('create', App\Model\Order::class)
+                                    <li class="nav-item">
+                                        <a href="{{ route('order.create') }}"
+                                            class="nav-link @if (request()->is('order/create')) active @endif">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Create</p>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                        @can('viewAny', App\Models\Report::class)
+                            <li class="nav-item">
+                                <a href="{{ route('report.index') }}" class="nav-link">
+                                    {{-- <i class="nav-icon fas fa-tachometer-alt"></i> --}}
+                                    <i class="nav-icon fas fa-file-alt"></i>
+                                    <p>Reported</p>
+                                </a>
+                            </li>
+                        @endcan
+                    @endif
+
                 </ul>
             </nav>
             <!-- /.sidebar-menu -->

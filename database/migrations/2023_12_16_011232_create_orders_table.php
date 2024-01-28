@@ -16,7 +16,9 @@ return new class extends Migration
             $table->timestamp('plan_date');
             $table->string('total_price')->default(0);
             $table->enum('order_status',['pending','ongoing','success'])->default('pending');
-            $table->integer('installments_total')->comment('total angsuran')->nullable();
+            $table->integer('invitation')->comment('jumlah undangan')
+            ->default(0);
+            $table->string('city');
             $table->timestamps();
 
             $table->foreignId('user_id')->constrained()

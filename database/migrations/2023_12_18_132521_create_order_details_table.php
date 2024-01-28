@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->string('total_price');
+            $table->string('total');
             $table->string('note');
 
             $table->timestamps();

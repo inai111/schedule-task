@@ -29,7 +29,8 @@ class SchedulePolicy
      */
     public function create(User $user): bool
     {
-        return $user->role_id == 2;
+        return true;
+        // return $user->role_id == 2;
     }
 
     public function createReport(User $user, Schedule $schedule): bool

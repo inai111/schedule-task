@@ -65,17 +65,22 @@
                                             @foreach ($order->orderDetails as $detail)
                                                 <tr>
                                                     <td>{{ $detail->vendor->name }}</td>
-                                                    <td>{{ $detail->vendor->category }}</td>
-                                                    <td>Rp. {{ number_format($detail->total_price) }}</td>
+                                                    <td>{{ $detail->vendor->category->name }}</td>
+                                                    <td>{{ Illuminate\Support\Number::currency($detail->total,in:"IDR",locale:'id') }}</td>
                                                 </tr>
                                             @endforeach
+                                            @if($order->orderDetails->count()==0)
+                                                <tr>
+                                                    <td colspan="3" class="text-muted text-center">No Vendor Selected</td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 @if ($order->orderDetails)
                                                     <th colspan="2" class="text-right">Total</th>
                                                     <th>Rp.
-                                                        {{ number_format($order->orderDetails->sum(fn($dtl) => $dtl->total_price)) }}
+                                                        {{ Illuminate\Support\Number::currency($order->total_price,in:"IDR",locale:'id') }}
                                                     </th>
                                                 @else
                                                     <th colspan="2" class="text-right">Total</th>
@@ -258,9 +263,16 @@
                                                                     @endif
                                                                     <div class="border shadows p-2"
                                                                         style="min-height: 120px">
-                                                                        @if ($schedule->orderDetail)
-                                                                            <p>{{ $schedule->orderDetail->note }}</p>
-                                                                        @endif
+                                                                        @foreach ($schedule->orderDetail as $od)
+                                                                        <div class="row">
+                                                                            <div class="col-4">
+                                                                                <p>{{ $od->vendor->name }}</p>
+                                                                            </div>
+                                                                            <div class="col-8">
+                                                                                <p><span class="text-muted"><b>Note : </b></span> {{ $od->note }}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        @endforeach
                                                                     </div>
                                                                 </div>
                                                                 </p>

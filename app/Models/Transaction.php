@@ -12,20 +12,27 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nominal','note'];
+    protected $fillable = ['total'];
 
     public static function boot()
     {
         parent::boot();
         static::creating(function($table){
-            $table->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
+            if(!$table->exp_date){
+                $table->exp_date = Carbon::now()->addDay()->format('Y-m-d 00:00:00');
+            }
             $table->slug = Uuid::uuid1();
         });
     }
 
-    public function transactionable()
+    public function order()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Order::class,'order_id');
+    }
+
+    public function user()
+    {
+        return $this->hasOneThrough(User::class,Order::class,'id','id','order_id','user_id');
     }
 
     public function transactionDetails()

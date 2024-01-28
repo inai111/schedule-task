@@ -59,6 +59,9 @@ $(document).ready(function () {
         let formElem = this;
         let body = new FormData(formElem);
         let url = formElem.action
+        let btn = this.querySelector(`[type=submit]`);
+
+        btn.disabled = 1;
 
         // reset message
         formElem.querySelectorAll('.invalid-feedback').forEach(elem=>elem.innerText='');
@@ -76,6 +79,8 @@ $(document).ready(function () {
         })
         .catch(e=>{
             let data = e.response.data;
+            btn.disabled = 0;
+
             if(data){
                 if(data.message){
                     toastr.error(data.message);

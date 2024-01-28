@@ -13,12 +13,7 @@ class Order extends Model
 
     public function transactions()
     {
-        return $this->morphMany(Transaction::class,'transactionable');
-    }
-
-    public function installments()
-    {
-        return $this->hasMany(Installment::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function user()

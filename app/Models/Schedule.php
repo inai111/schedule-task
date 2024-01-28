@@ -41,6 +41,6 @@ class Schedule extends Model
 
     public function orderDetail()
     {
-        return $this->hasOne(OrderDetail::class);
+        return $this->hasMany(OrderDetail::class);
     }
 }

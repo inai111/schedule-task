@@ -21,7 +21,7 @@
 
             <div class="content">
                 <div class="container-fluid">
-                    asdas
+                    <livewire:transactionTable />
                 </div>
             </div>
 

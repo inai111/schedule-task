@@ -37,7 +37,7 @@ class TransactionPolicy
      */
     public function update(User $user, Transaction $transaction): bool
     {
-        return ($user->id === $transaction->transactionable->user->id) && $transaction->status=='waiting';
+        return ($user->id === $transaction->user->id) && $transaction->status=='waiting';
     }
 
     /**

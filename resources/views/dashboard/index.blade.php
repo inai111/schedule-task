@@ -25,6 +25,9 @@
                     <div class="row">
                         <div class="col-lg-6">
                             @if ($user->role_id == 4)
+                                <a href="{{ route('order.create') }}" class="btn btn-primary mb-2">
+                                    Order Service Now
+                                </a>
                                 <div class="card">
                                     <div class="card-header border-0">
                                         <h3 class="card-title">Active Order</h3>
@@ -86,64 +89,30 @@
                                                     </tr>
                                                 @endif
                                             </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="5" class="text-center">
-                                                        <a href="{{ route('order.create') }}"
-                                                            class="btn btn-sm btn-primary">
-                                                            Order Service Now
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
 
                                 <div class="card">
-                                    <div class="card-header border-0">
-                                        <h3 class="card-title">Active Payment</h3>
-                                    </div>
                                     <div class="card-body table-responsive p-0">
                                         <table class="table table-striped table-valign-middle">
                                             <thead>
                                                 <tr>
-                                                    <th>Order Id</th>
-                                                    <th>Installment</th>
-                                                    <th>Price</th>
-                                                    <th>Status</th>
-                                                    <th>Pay Before</th>
-                                                    <th>More</th>
+                                                    <th colspan="2">Bill Active</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @if ($orders->count() > 0 && $orders->first()->installments->count() > 0)
-                                                    <tr>
-                                                        <td>
-                                                            <img src="{{ asset('storage/ico.png') }}" alt="Product 1"
-                                                                class="img-circle img-size-32 mr-2">
-                                                            Weeding Organizer
-                                                        </td>
-                                                        <td>$13 USD</td>
-                                                        <td>
-                                                            <small class="text-success mr-1">
-                                                                <i class="fas fa-arrow-up"></i>
-                                                                12%
-                                                            </small>
-                                                            12,000 Sold
-                                                        </td>
-                                                        <td>
-                                                            <a href="#" class="text-muted">
-                                                                <i class="fas fa-search"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td colspan="6" class="text-center text-muted">No Active
-                                                            Installment</td>
-                                                    </tr>
-                                                @endif
+                                                <tr>
+                                                    <th style="font-size: 2rem">
+                                                        {{ Illuminate\Support\Number::currency($totalBill ?? 0, in: 'IDR', locale: 'id') }}
+                                                    </th>
+                                                    <td>
+                                                        <button data-toggle="modal" data-target="#setNominal"
+                                                        class="btn btn-primary rounded-pill px-4">
+                                                            <i class="fas fa-plus mr-2"></i>Pay Bill
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -224,7 +193,7 @@
                                     </div>
                                 </div>
                             @endif
-                            
+
                             @if ($user->role_id == 1)
                                 <div class="card">
                                     <div class="card-header border-0">
@@ -241,26 +210,29 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                        @foreach ($orders as $order)
-                                        <tr>
-                                            <td>
-                                                <a href="{{route('order.show',['order'=>$order->id])}}">
-                                                    #{{str_pad($order->id,5,0,STR_PAD_LEFT)}}</td>
-                                                </a>
-                                            <td>{{$order->user->name}}</td>
-                                            <td>{{$order->plan_date}}</td>
-                                            <td>
-                                                <a href="{{route('report.index',['order'=>$order->id])}}">
-                                                    <i class="fas fa-file-alt text-primary"></i>
-                                                    <span class="text-muted">
-                                                        Lihat Report
-                                                    </span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                @foreach ($orders as $order)
+                                                    <tr>
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('order.show', ['order' => $order->id]) }}">
+                                                                #{{ str_pad($order->id, 5, 0, STR_PAD_LEFT) }}
+                                                        </td>
+                                                        </a>
+                                                        <td>{{ $order->user->name }}</td>
+                                                        <td>{{ $order->plan_date }}</td>
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('report.index', ['order' => $order->id]) }}">
+                                                                <i class="fas fa-file-alt text-primary"></i>
+                                                                <span class="text-muted">
+                                                                    Lihat Report
+                                                                </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             @endif
@@ -268,7 +240,7 @@
                         </div>
                         <!-- /.col-md-6 -->
                         <div class="col-lg-6">
-                            @if (in_array($user->role_id,[2,4]))
+                            @if (in_array($user->role_id, [2, 4]))
                                 <div class="card">
                                     <div class="card-header border-0">
                                         <div class="d-flex justify-content-between">
@@ -380,6 +352,9 @@
                         </div>
                         <!-- /.col-md-6 -->
                     </div>
+                    @if ($user->role_id==3)
+                        <livewire:ongoing-order />
+                    @endif
 
                     <!-- /.row -->
                 </div>
@@ -388,5 +363,27 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
+
+        
+        @if ($user->role_id == 4)
+        <!-- Modal -->
+        <div class="modal fade" id="setNominal" tabindex="-1" aria-labelledby="setNominalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="setNominalLabel">Pay Bill</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <livewire:payBill />
+                        <livewire:staffTransaksi />
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
     </x-dashboard>
 </x-layout>

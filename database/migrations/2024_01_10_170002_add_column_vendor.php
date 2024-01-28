@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('installments', function (Blueprint $table) {
-            $table->id();
-            $table->integer('installments');
-            $table->string('total_price');
-            $table->timestamp('pay_before_date');
-            $table->timestamps();
-
-            $table->foreignId('order_id')->constrained('orders','id')
+        Schema::table('vendors', function (Blueprint $table) {
+            $table->foreignId('category_id')->constrained()
             ->onDelete('cascade');
+            $table->dropColumn('category');
         });
     }
 
@@ -28,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('installments');
+        Schema::table('vendors', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -2,11 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
-class Installment extends Pivot
+class Installment extends Model
 {
     protected $table = 'installments';
+    protected $fillable = ['total_price','installments','pay_before_date'];
+
+    public static function boot()
+    {
+        parent::boot();
+        static::creating(function($table){
+            $installment = $table->order->installments()->count();
+            $date = Carbon::now()->addMonth()->lastOfMonth()->toDateString();
+            
+            $table->installments = $installment+1;
+            $table->pay_before_date = $date;
+        });
+    }
 
     public function order()
     {

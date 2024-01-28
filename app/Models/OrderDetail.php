@@ -11,7 +11,8 @@ class OrderDetail extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
-        'total_price','note','status','vendor_id','order_id','schedule_id'
+        'total','note','status','vendor_id','order_id','schedule_id',
+        'order_detail_id'
     ];
 
     public function order()
@@ -27,5 +28,16 @@ class OrderDetail extends Model
     public function schedule()
     {
         return $this->belongsTo(Schedule::class);
+    }
+
+    public function transaction()
+    {
+        return $this->hasOneThrough(Transaction::class,TransactionDetail::class,'order_detail_id','id','id','transaction_id')
+        ->where('transactions.status','success');
+    }
+
+    public function transactionDetail()
+    {
+        return $this->hasOne(TransactionDetail::class,'order_detail_id');
     }
 }
