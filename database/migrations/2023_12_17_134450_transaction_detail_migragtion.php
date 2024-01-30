@@ -21,8 +21,6 @@ return new class extends Migration
 
             $table->foreignId('transaction_id')->constrained()
             ->onDelete('cascade');
-            $table->foreignId('order_detail_id')->nullable()
-            ->constrained()->onDelete('cascade');
         });
     }
 

@@ -1,6 +1,6 @@
 <x-layout title="Dashboard" class="">
     <x-slot:head>
-        @vite(['/resources/js/create_report.js'])
+        @vite(['resources/js/create_report.js'])
     </x-slot>
     <x-dashboard>
         <div class="content-wrapper">

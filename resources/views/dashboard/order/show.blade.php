@@ -3,7 +3,7 @@
 @endphp
 <x-layout title="Dashboard" class="">
     <x-slot:head>
-        @vite(['/resources/js/show_order.js'])
+        @vite(['resources/js/show_order.js'])
     </x-slot>
     <x-dashboard>
         <div class="content-wrapper">

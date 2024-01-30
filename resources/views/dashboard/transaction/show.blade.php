@@ -3,7 +3,7 @@
         @if ($transaction->status == 'waiting')
             <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
                 data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
-            @vite('/resources/js/transaction-show.js')
+            @vite('resources/js/transaction-show.js')
         @endif
     </x-slot>
     <x-dashboard>
