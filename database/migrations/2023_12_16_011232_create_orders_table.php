@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('order_status',['pending','ongoing','success'])->default('pending');
             $table->integer('invitation')->comment('jumlah undangan')
             ->default(0);
-            $table->string('city');
+            $table->string('city')->nullable();
             $table->timestamps();
 
             $table->foreignId('user_id')->constrained()
